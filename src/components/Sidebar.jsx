@@ -79,9 +79,9 @@ export default function Sidebar() {
                           }`}
                         >
                           <span>Collections</span>
-                          {activeSubItem === 'collections' && (
+                          {/* {activeSubItem === 'collections' && (
                             <ChevronRight className="w-3 h-3 text-[#5c5f62]" />
-                          )}
+                          )} */}
                         </a>
                       </li>
                       <li>
