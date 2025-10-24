@@ -9,7 +9,7 @@ export default function Sidebar() {
   const [activeSubItem, setActiveSubItem] = useState('collections'); // Track active sub-item
 
   return (
-    <aside className="w-[200px] bg-[#ececec] border-r border-[#e1e1e1] flex flex-col">
+    <aside className="w-[240px] bg-[#ececec] border-r border-[#e1e1e1] flex flex-col">
       {/* Logo Area */}
       
 
@@ -68,7 +68,7 @@ export default function Sidebar() {
                 
                 {/* Products Submenu */}
                 {productsExpanded && (
-                  <div className="bg-gray-200">
+                  <div className="bg-[#ececec]">
                     <ul className="py-1">
                       <li>
                         <a 
@@ -113,7 +113,8 @@ export default function Sidebar() {
                         </a>
                       </li>
                       <li>
-                        <button 
+                        <a 
+                          href="/adminDashboard/Transfers" 
                           onClick={() => setActiveSubItem('transfers')}
                           className={`w-full flex items-center justify-between px-4 py-1.5 pl-[44px] text-[14px] text-[#303030] font-normal hover:bg-[#f7f7f7] transition-colors ${
                             activeSubItem === 'transfers' ? 'bg-[#ececec]' : ''
@@ -123,10 +124,11 @@ export default function Sidebar() {
                           {activeSubItem === 'transfers' && (
                             <ChevronRight className="w-3 h-3 text-[#5c5f62]" />
                           )}
-                        </button>
+                        </a>
                       </li>
                       <li>
-                        <button 
+                        <a 
+                          href="/adminDashboard/GiftCards" 
                           onClick={() => setActiveSubItem('gift-cards')}
                           className={`w-full flex items-center justify-between px-4 py-1.5 pl-[44px] text-[14px] text-[#303030] font-normal hover:bg-[#f7f7f7] transition-colors ${
                             activeSubItem === 'gift-cards' ? 'bg-[#ececec]' : ''
@@ -136,7 +138,7 @@ export default function Sidebar() {
                           {activeSubItem === 'gift-cards' && (
                             <ChevronRight className="w-3 h-3 text-[#5c5f62]" />
                           )}
-                        </button>
+                        </a>
                       </li>
                     </ul>
                   </div>
@@ -156,7 +158,7 @@ export default function Sidebar() {
             </li>
 
             {/* Marketing */}
-            <li>
+            {/* <li>
               <button className="w-full flex items-center gap-3 px-4 py-2 text-[14px] hover:bg-[#e8e8e8] transition-colors">
                 <svg className="w-4 h-4 text-[#5c5f62]" viewBox="0 0 16 16" fill="currentColor">
                   <path d="M3 8a5 5 0 0 1 10 0 1 1 0 0 0 2 0 7 7 0 1 0-7 7 1 1 0 0 0 0-2 5 5 0 0 1-5-5"></path>
@@ -165,7 +167,7 @@ export default function Sidebar() {
                 </svg>
                 <span className="text-[#303030] font-medium">Marketing</span>
               </button>
-            </li>
+            </li> */}
 
             {/* Discounts */}
             <li>
@@ -178,7 +180,7 @@ export default function Sidebar() {
             </li>
 
             {/* Content */}
-            <li>
+            {/* <li>
               <button className="w-full flex items-center gap-3 px-4 py-2 text-[14px] hover:bg-[#e8e8e8] transition-colors">
                 <svg className="w-4 h-4 text-[#5c5f62]" viewBox="0 0 16 16" fill="currentColor">
                   <path d="M10 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2"></path>
@@ -188,10 +190,10 @@ export default function Sidebar() {
                 </svg>
                 <span className="text-[#303030] font-medium">Content</span>
               </button>
-            </li>
+            </li> */}
 
             {/* Markets */}
-            <li>
+            {/* <li>
               <button className="w-full flex items-center gap-3 px-4 py-2 text-[14px] hover:bg-[#e8e8e8] transition-colors">
                 <svg className="w-4 h-4 text-[#5c5f62]" viewBox="0 0 16 16" fill="currentColor">
                   <path d="M1 8a7 7 0 0 1 12.584-4.222 2 2 0 0 0-2.327 1.806 3.5 3.5 0 0 0-1.862 2.166h-1.395a1.255 1.255 0 0 1-.764-2.248l.462-.357a.89.89 0 0 0 .347-.707v-.04c0-.747.606-1.353 1.353-1.353h.057c.193 0 .37-.069.509-.184a5.5 5.5 0 0 0-6.945 2.804l1.89 1.89c.378.379.591.892.591 1.427v.518a1 1 0 0 0 1 1 1.5 1.5 0 0 1 1.5 1.5v1.5q.647-.002 1.253-.143c.029.546.277 1.035.658 1.379a7 7 0 0 1-8.911-6.736"></path>
@@ -199,10 +201,10 @@ export default function Sidebar() {
                 </svg>
                 <span className="text-[#303030] font-medium">Markets</span>
               </button>
-            </li>
+            </li> */}
 
             {/* Analytics */}
-            <li>
+            {/* <li>
               <button className="w-full flex items-center gap-3 px-4 py-2 text-[14px] hover:bg-[#e8e8e8] transition-colors">
                 <svg className="w-4 h-4 text-[#5c5f62]" viewBox="0 0 16 16" fill="currentColor">
                   <path d="M7.971 2c-.204 0-.344 0-.465.024a1.25 1.25 0 0 0-.982.982c-.024.121-.024.26-.024.465v9.058c0 .204 0 .344.024.465.099.496.486.883.982.982.121.024.26.024.465.024h.058c.204 0 .344 0 .465-.024a1.25 1.25 0 0 0 .982-.982c.024-.121.024-.26.024-.465v-9.058c0-.204 0-.344-.024-.465a1.25 1.25 0 0 0-.982-.982c-.121-.024-.26-.024-.465-.024z"></path>
@@ -211,55 +213,12 @@ export default function Sidebar() {
                 </svg>
                 <span className="text-[#303030] font-medium">Analytics</span>
               </button>
-            </li>
+            </li> */}
           </ul>
         </div>
 
         {/* Sales Channels Section */}
-        <div className="py-2">
-          <ul className="space-y-0.5">
-            <li>
-              <div>
-                <button className="w-full flex items-center justify-between px-4 py-2 text-[13px] hover:bg-[#e8e8e8] transition-colors">
-                  <span className="text-[#303030] font-medium">Sales channels</span>
-                  <ChevronRight className="w-3 h-3 text-[#5c5f62]" />
-                </button>
-                
-                {/* Online Store */}
-                <div className="pl-4">
-                  <button className="w-full flex items-center gap-3 px-4 py-2 text-[14px] hover:bg-[#e8e8e8] transition-colors">
-                    <svg className="w-4 h-4 text-[#5c5f62]" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M5 11.18v4.445c0 .345.28.625.625.625h2.5v-2.5c0-.69.56-1.25 1.25-1.25h1.25c.69 0 1.25.56 1.25 1.25v2.5h2.5c.345 0 .625-.28.625-.625V11.18a2.822 2.822 0 0 1-2.813-.975A2.807 2.807 0 0 1 10 11.25a2.807 2.807 0 0 1-2.188-1.045A2.807 2.807 0 0 1 5 11.18ZM7.188 7.5v.938a1.562 1.562 0 1 1-3.125 0V7.5h3.125ZM8.438 8.438V7.5h3.124v.938a1.563 1.563 0 0 1-3.124 0ZM12.813 8.438V7.5h3.124v.938a1.563 1.563 0 0 1-3.124 0ZM4.305 6.25h11.39l-.69-2.073a.625.625 0 0 0-.593-.427H5.588a.625.625 0 0 0-.592.427L4.305 6.25Z"></path>
-                      <path fillRule="evenodd" d="M5 0a5 5 0 0 0-5 5v10a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5V5a5 5 0 0 0-5-5H5ZM3.81 3.782A1.875 1.875 0 0 1 5.588 2.5h8.824c.807 0 1.523.516 1.778 1.282l.997 2.992v1.663c0 .833-.362 1.582-.937 2.097v5.091c0 1.035-.84 1.875-1.875 1.875h-8.75a1.875 1.875 0 0 1-1.875-1.875v-5.091a2.805 2.805 0 0 1-.938-2.097V6.774l.998-2.992Z" clipRule="evenodd"></path>
-                    </svg>
-                    <span className="text-[#303030] font-medium">Online Store</span>
-                  </button>
-                </div>
-              </div>
-            </li>
-
-            {/* Apps */}
-            <li>
-              <div>
-                <button className="w-full flex items-center justify-between px-4 py-2 text-[13px] hover:bg-[#e8e8e8] transition-colors">
-                  <span className="text-[#303030] font-medium">Apps</span>
-                  <ChevronRight className="w-3 h-3 text-[#5c5f62]" />
-                </button>
-                
-                {/* Add Button */}
-                <div className="pl-4">
-                  <button className="w-full flex items-center gap-3 px-4 py-2 text-[14px] hover:bg-[#e8e8e8] transition-colors">
-                    <svg className="w-4 h-4 text-[#5c5f62]" viewBox="0 0 16 16" fill="currentColor">
-                      <path d="M4.25 8a.75.75 0 0 1 .75-.75h2.25v-2.25a.75.75 0 0 1 1.5 0v2.25h2.25a.75.75 0 0 1 0 1.5h-2.25v2.25a.75.75 0 0 1-1.5 0v-2.25h-2.25a.75.75 0 0 1-.75-.75"></path>
-                      <path fillRule="evenodd" d="M8 15a7 7 0 1 0 0-14 7 7 0 0 0 0 14m0-1.5a5.5 5.5 0 1 0 0-11 5.5 5.5 0 1 0 0 11"></path>
-                    </svg>
-                    <span className="text-[#303030] font-medium">Add</span>
-                  </button>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
+       
       </div>
 
       {/* Settings at bottom */}

@@ -54,11 +54,14 @@ export async function POST(request) {
 
     // Generate JWT token
     const token = generateToken(user._id.toString(), user.email, user.role);
+    
+    console.log('Generated token for user:', user.email);
+    console.log('User ID:', user._id.toString());
 
     // Return success response (don't include password)
     const { password: _, ...userWithoutPassword } = user;
     
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         message: 'Login successful',
         user: userWithoutPassword,
@@ -66,6 +69,17 @@ export async function POST(request) {
       },
       { status: 200 }
     );
+
+    // Set token in cookie for server-side access
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      path: '/'
+    });
+
+    return response;
 
   } catch (error) {
     console.error('Signin error:', error);

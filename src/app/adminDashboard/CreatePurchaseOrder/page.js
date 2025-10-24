@@ -548,7 +548,7 @@ export default function CreatePurchaseOrder() {
 
       {/* Create Supplier Modal */}
       {showCreateSupplierModal && (
-        <div className="fixed inset-0  flex items-center justify-center z-[9999]">
+        <div className="fixed inset-0  flex items-center justify-center z-[9999] " style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
           <div className="bg-white rounded-xl shadow-lg w-[600px] max-h-[90vh] overflow-hidden">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-[#e1e1e1]">
@@ -761,7 +761,7 @@ export default function CreatePurchaseOrder() {
 
       {/* Manage Cost Summary Modal */}
       {showManageCostModal && (
-        <div className="fixed inset-0  flex items-center justify-center z-[9999]">
+        <div className="fixed inset-0  flex items-center justify-center z-[9999] " style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
           <div className="bg-white rounded-xl shadow-lg w-[500px] max-h-[80vh] overflow-hidden">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-4 border-b border-[#e1e1e1]">

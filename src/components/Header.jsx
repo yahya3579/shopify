@@ -1,8 +1,97 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Plus, ChevronDown, Check, LogOut } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const dropdownRef = useRef(null);
+  const router = useRouter();
+
+  // Fetch user data on component mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+
+        console.log('Fetching user data with token:', token.substring(0, 20) + '...');
+
+        const response = await fetch('/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log('API response status:', response.status);
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('User data received:', data);
+          setUser(data.user);
+        } else {
+          const errorData = await response.json();
+          console.error('API error:', errorData);
+          // Token is invalid, remove it
+          localStorage.removeItem('token');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        localStorage.removeItem('token');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  // Click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDropdown]);
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      // Clear local storage
+      localStorage.removeItem('token');
+      
+      // Redirect to login page
+      router.push('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still redirect even if API call fails
+      localStorage.removeItem('token');
+      router.push('/');
+    }
+  };
   return (
     <header className="bg-[#1a1a1a] text-white h-14 flex items-center justify-between px-4 border-b border-[#2d2d2d]">
       {/* Left Side - Logo */}
@@ -60,15 +149,69 @@ export default function Header() {
             1
           </span>
         </button>
-        <div className="flex items-center gap-2 cursor-pointer">
-          <div className="relative">
-            <span className="w-8 h-8 rounded-lg bg-[#95bf47] flex items-center justify-center">
-              <svg className="w-8 h-8" viewBox="0 0 40 40">
-                <text className="fill-current" x="50%" y="50%" dy="0.35em" textAnchor="middle">MS</text>
-              </svg>
-            </span>
-          </div>
-          <span className="text-sm font-medium text-white">My Store</span>
+        <div className="relative" ref={dropdownRef}>
+          <button 
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="flex items-center gap-2 cursor-pointer hover:bg-[#2d2d2d] rounded px-2 py-1 transition-colors"
+          >
+            <div className="relative">
+              <span className="w-8 h-8 rounded-lg bg-[#95bf47] flex items-center justify-center">
+                <svg className="w-8 h-8" viewBox="0 0 40 40">
+                  <text className="fill-current" x="50%" y="50%" dy="0.35em" textAnchor="middle">MS</text>
+                </svg>
+              </span>
+            </div>
+            <span className="text-sm font-medium text-white">My Store</span>
+            <ChevronDown className="w-4 h-4 text-white" />
+          </button>
+
+          {/* Dropdown Menu */}
+          {showDropdown && (
+            <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-[#e1e1e1] z-50 overflow-hidden">
+              {/* Store Options */}
+              
+
+              {/* Separator */}
+              <div className="border-t border-[#e1e1e1]"></div>
+
+              {/* User Profile Section */}
+              <div className="py-2">
+                <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-full bg-[#8b5cf6] flex items-center justify-center">
+                      <svg className="w-8 h-8" viewBox="0 0 40 40">
+                        <text className="fill-current text-white" x="50%" y="50%" dy="0.35em" textAnchor="middle">
+                          {user ? `${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}` : 'U'}
+                        </text>
+                      </svg>
+                    </span>
+                    <div className="text-left">
+                      <p className="text-[14px] font-medium text-[#303030]">
+                        {user ? `${user.firstName || ''} ${user.lastName || ''}` : 'Loading...'}
+                      </p>
+                      <p className="text-[12px] text-[#6d7175]">
+                        {user ? user.email : ''}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              </div>
+
+              {/* Separator */}
+              <div className="border-t border-[#e1e1e1]"></div>
+
+              {/* Log Out */}
+              <div className="py-2">
+                <button 
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                >
+                  <LogOut className="w-4 h-4 text-[#6d7175]" />
+                  <span className="text-[14px] text-[#303030]">Log out</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </header>

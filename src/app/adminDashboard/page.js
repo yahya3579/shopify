@@ -1,10 +1,66 @@
 'use client';
 
 import { Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 
 export default function AdminDashboard() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        router.push('/');
+        return;
+      }
+
+      // Verify token is still valid by calling the API
+      try {
+        const response = await fetch('/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          setIsAuthenticated(true);
+        } else {
+          // Token is invalid, remove it and redirect
+          localStorage.removeItem('token');
+          router.push('/');
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        localStorage.removeItem('token');
+        router.push('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-[#f1f1f1]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#303030] mx-auto mb-4"></div>
+          <p className="text-[#303030]">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
   return (
     <div className="flex flex-col h-screen bg-[#f1f1f1]">
       {/* Header */}
