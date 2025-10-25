@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import Header from '../../../components/Header';
-import Sidebar from '../../../components/Sidebar';
+import AdminLayout from '../../../components/AdminLayout';
 import { MoreHorizontal, Trash2 } from 'lucide-react';
 import { fetchCollections, deleteCollection } from '../../../lib/collectionApi';
 import { toast } from 'sonner';
@@ -121,23 +120,11 @@ export default function Collections() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#f1f1f1]">
-      {/* Header */}
-      <Header />
-
-      {/* Main Layout with Sidebar and Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-[#f1f1f1] rounded-tl-3xl">
-          {/* Main Content Area */}
-          <main className="flex-1 overflow-auto bg-[#f1f1f1]">
-            <div className="w-full px-6 py-6">
-              {/* Page Header */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between">
+    <AdminLayout>
+      <div className="w-full px-4 lg:px-6 py-4 lg:py-6">
+        {/* Page Header */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
                   {/* Title with Icon */}
                   <div className="flex items-center gap-2">
                     <div className="flex items-center justify-center">
@@ -424,17 +411,14 @@ export default function Collections() {
                 </div>
               </div>
 
-              {/* Footer Help */}
-              <div className="mt-6 text-center">
-                <button className="text-[13px] text-[#000000] hover:underline font-medium">
-                  Learn more about collections
-                </button>
-              </div>
-            </div>
-          </main>
+        {/* Footer Help */}
+        <div className="mt-6 text-center">
+          <button className="text-[13px] text-[#000000] hover:underline font-medium">
+            Learn more about collections
+          </button>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }
 

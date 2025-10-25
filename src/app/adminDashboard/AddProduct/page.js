@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Header from '../../../components/Header';
-import Sidebar from '../../../components/Sidebar';
+import AdminLayout from '../../../components/AdminLayout';
 import { ChevronLeft, ChevronDown, Trash2, ChevronRight, Plus, Search, Upload, X } from 'lucide-react';
 import { uploadProductImage, createProduct, deleteProductImage } from '../../../lib/productApi';
 import { toast } from 'sonner';
@@ -358,23 +357,11 @@ export default function AddProduct() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#f1f1f1]">
-      {/* Header */}
-      <Header />
-
-      {/* Main Layout with Sidebar and Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-[#f1f1f1] rounded-tl-3xl">
-          {/* Main Content Area */}
-          <main className="flex-1 overflow-auto bg-[#f1f1f1]">
-            <div className="max-w-[1200px] mx-auto px-26 py-6">
-              {/* Page Header */}
-              <div className="mb-6">
-                <div className="flex items-center gap-2">
+    <AdminLayout>
+      <div className="max-w-[1200px] mx-auto px-4 lg:px-26 py-4 lg:py-6">
+        {/* Page Header */}
+        <div className="mb-4 lg:mb-6">
+          <div className="flex items-center gap-2">
                   {/* Products Link */}
                   <a 
                     href="/adminDashboard" 
@@ -392,17 +379,17 @@ export default function AddProduct() {
                     <path d="M4 8L6.5 11L4 14" stroke="#8A8A8A" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"></path>
                   </svg>
                   
-                  {/* Page Title */}
-                  <h1 className="text-[20px] font-semibold text-[#303030]" tabIndex="-1">Add product</h1>
-                </div>
-              </div>
+            {/* Page Title */}
+            <h1 className="text-[18px] sm:text-[20px] font-semibold text-[#303030]" tabIndex="-1">Add product</h1>
+          </div>
+        </div>
 
-              {/* Two Column Layout */}
-              <div className="flex gap-5">
-                {/* Left Column - Main Content */}
-                <div className="flex-1 space-y-4">
-                  {/* Title, Description, Media, Category Card */}
-                  <div className="bg-white rounded-xl shadow-sm p-4 space-y-4">
+        {/* Two Column Layout */}
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-5">
+          {/* Left Column - Main Content */}
+          <div className="flex-1 space-y-3 lg:space-y-4">
+            {/* Title, Description, Media, Category Card */}
+            <div className="bg-white rounded-xl shadow-sm p-4 space-y-4">
                     {/* Title */}
                     <div>
                       <label htmlFor="title" className="block text-[13px] font-medium text-[#303030] mb-1.5">
@@ -446,7 +433,7 @@ export default function AddProduct() {
                       
                       {/* Uploaded Images Grid */}
                       {uploadedImages.length > 0 && (
-                        <div className="grid grid-cols-4 gap-4 mb-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4 mb-4">
                           {uploadedImages.map((image, index) => (
                             <div key={index} className="relative group">
                               <img
@@ -468,8 +455,8 @@ export default function AddProduct() {
                       
                       <div className="border-2 border-dashed border-[#c9cccf] rounded-lg p-6 text-center">
                         <div className="flex flex-col items-center gap-2">
-                          <div className="flex items-center gap-2">
-                            <label className="px-3 py-1.5 bg-white border border-[#c9cccf] text-[13px] rounded-lg hover:bg-gray-50 cursor-pointer flex items-center gap-2">
+                          <div className="flex flex-col sm:flex-row items-center gap-2">
+                            <label className="w-full sm:w-auto px-3 py-1.5 bg-white border border-[#c9cccf] text-[13px] rounded-lg hover:bg-gray-50 cursor-pointer flex items-center justify-center gap-2">
                               <Upload className="w-4 h-4" />
                               {uploadingImages ? 'Uploading...' : 'Upload new'}
                               <input
@@ -481,7 +468,7 @@ export default function AddProduct() {
                                 disabled={uploadingImages}
                               />
                             </label>
-                            <button className="text-[13px] text-[#000000] hover:underline" type="button">
+                            <button className="w-full sm:w-auto text-[13px] text-[#000000] hover:underline text-center" type="button">
                               Select existing
                             </button>
                           </div>
@@ -515,9 +502,9 @@ export default function AddProduct() {
                           <ChevronDown className="w-4 h-4 text-[#6d7175]" />
                         </button>
                         
-                        {/* Category Dropdown */}
+                          {/* Category Dropdown */}
                         {showCategoryDropdown && (
-                          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#c9cccf] rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#c9cccf] rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto w-full">
                             <div className="flex">
                               {/* Main Categories */}
                               <div className="flex-1 min-w-0">
@@ -659,11 +646,11 @@ export default function AddProduct() {
                       <div className="p-4">
                         <div className="border border-[#c9cccf] rounded-lg overflow-hidden">
                           <div className="flex border-b border-[#c9cccf] bg-[#f6f6f7]">
-                            <div className="flex-1 px-3 py-2 text-[12px] font-medium text-[#303030]">Location</div>
+                            <div className="flex-1 px-3 py-2 text-[12px] font-medium text-[#303030]">Items</div>
                             <div className="w-32 px-3 py-2 text-[12px] font-medium text-[#303030] text-right">Quantity</div>
                           </div>
                           <div className="flex">
-                            <div className="flex-1 px-3 py-2 text-[13px] text-[#303030]">Shop location</div>
+                            <div className="flex-1 px-3 py-2 text-[13px] text-[#303030]">Inventory Items</div>
                             <div className="w-32 px-2 py-1">
                               <input
                                 type="number"
@@ -914,7 +901,7 @@ export default function AddProduct() {
                 </div>
 
                 {/* Right Column - Sidebar */}
-                <div className="w-80 space-y-4">
+                <div className="w-full lg:w-80 space-y-3 lg:space-y-4">
                   {/* Status Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div className="p-4 border-b border-[#e1e1e1]">
@@ -1084,15 +1071,15 @@ export default function AddProduct() {
                 </div>
               </div>
 
-              {/* Error Message */}
-              {error && (
-                <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-[13px] text-red-600">{error}</p>
-                </div>
-              )}
+        {/* Error Message */}
+        {error && (
+          <div className="mt-4 lg:mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-[13px] text-red-600">{error}</p>
+          </div>
+        )}
 
-              {/* Save Button */}
-              <div className="mt-6 flex justify-end gap-3">
+        {/* Save Button */}
+        <div className="mt-4 lg:mt-6 flex flex-col sm:flex-row justify-end gap-3">
                 <button 
                   onClick={() => window.history.back()}
                   className="px-4 py-2 bg-white border border-[#c9cccf] text-[#303030] text-[13px] font-semibold rounded-lg hover:bg-gray-50 transition-colors"
@@ -1107,11 +1094,8 @@ export default function AddProduct() {
                 >
                   {saving ? 'Saving...' : 'Save Product'}
                 </button>
-              </div>
-            </div>
-          </main>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

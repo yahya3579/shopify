@@ -444,7 +444,9 @@ export default function AdminDashboard() {
 
   const getTotalInventory = (product) => {
     if (!product.inventory || product.inventory.length === 0) return 0;
-    return product.inventory.reduce((sum, inv) => sum + (inv.quantity || 0), 0);
+    // Check for 'Shop location' and return its quantity
+    const shopLocation = product.inventory.find(inv => inv.location === 'Shop location');
+    return shopLocation ? shopLocation.quantity || 0 : 0;
   };
 
   const getVariantsCount = (product) => {
@@ -801,7 +803,8 @@ export default function AdminDashboard() {
                       <tbody>
                         {filteredProducts.map((product) => {
                           const inventory = inventoryData[product._id] || {};
-                          const availableStock = inventory.available || 0;
+                          // Use getTotalInventory to get quantity from "Shop location"
+                          const availableStock = getTotalInventory(product);
                           const variantsCount = getVariantsCount(product);
                           const productImage = product.media && product.media.length > 0 ? product.media[0].url : null;
                           const hasVariants = product.variants && product.variants.length > 0;

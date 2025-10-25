@@ -1,25 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import Header from '@/components/Header';
-import Sidebar from '@/components/Sidebar';
+import AdminLayout from '@/components/AdminLayout';
 
 export default function TransfersPage() {
   return (
-    <div className="flex flex-col h-screen bg-[#f1f1f1]">
-      {/* Header */}
-      <Header />
-
-      {/* Main Layout with Sidebar and Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-[#f1f1f1] rounded-tl-3xl">
-          {/* Main Content Area */}
-          <main className="flex-1 overflow-auto bg-[#f1f1f1]">
-            <div className="w-full px-6 py-6">
+    <AdminLayout>
+      <div className="w-full px-4 lg:px-6 py-4 lg:py-6">
               {/* Page Header */}
               <div className="mb-6">
                 <div className="flex items-center gap-2">
@@ -73,16 +60,13 @@ export default function TransfersPage() {
                 </div>
               </div>
 
-              {/* Footer Link */}
-              <div className="mt-6 text-center">
-                <button className="text-[13px] text-[#005bd3] hover:underline font-medium">
-                  Learn more about transfers
-                </button>
-              </div>
-            </div>
-          </main>
+        {/* Footer Link */}
+        <div className="mt-6 text-center">
+          <button className="text-[13px] text-[#005bd3] hover:underline font-medium">
+            Learn more about transfers
+          </button>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

@@ -7,10 +7,14 @@ import Sidebar from './Sidebar';
 export default function AdminLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const toggleSidebar = () => {
+    setSidebarOpen(prev => !prev);
+  };
+
   return (
     <div className="flex flex-col h-screen bg-[#f1f1f1]">
       {/* Header */}
-      <Header onMenuClick={() => setSidebarOpen(true)} />
+      <Header onMenuClick={toggleSidebar} />
 
       {/* Main Layout with Sidebar and Content */}
       <div className="flex flex-1 overflow-hidden">

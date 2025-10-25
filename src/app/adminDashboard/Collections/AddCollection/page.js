@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Header from '../../../../components/Header';
-import Sidebar from '../../../../components/Sidebar';
+import AdminLayout from '../../../../components/AdminLayout';
 import { ChevronLeft, X, Upload } from 'lucide-react';
 import { 
   uploadCollectionImage, 
@@ -166,19 +165,7 @@ export default function AddCollection() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#f1f1f1]">
-      {/* Header */}
-      <Header />
-
-      {/* Main Layout with Sidebar and Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-[#f1f1f1] rounded-tl-3xl">
-          {/* Main Content Area */}
-          <main className="flex-1 overflow-auto bg-[#f1f1f1]">
+    <AdminLayout>
             <div className="max-w-[1200px] mx-auto px-30 py-6">
               {/* Page Header */}
               <div className="mb-6">
@@ -629,9 +616,6 @@ export default function AddCollection() {
                 </button>
               </div>
             </div>
-          </main>
-        </div>
-      </div>
-    </div>
+    </AdminLayout>
   );
 }

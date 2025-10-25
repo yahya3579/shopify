@@ -99,9 +99,13 @@ export default function Header({ onMenuClick }) {
       <div className="flex items-center gap-4">
         {/* Mobile Menu Button */}
         <button 
-          onClick={onMenuClick}
+          onClick={(e) => {
+            e.stopPropagation();
+            onMenuClick && onMenuClick();
+          }}
           className="lg:hidden p-2 hover:bg-[#2d2d2d] rounded transition-colors"
           aria-label="Toggle menu"
+          data-sidebar-trigger
         >
           <Menu className="w-5 h-5" />
         </button>

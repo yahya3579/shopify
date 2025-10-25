@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Header from '../../../../components/Header';
-import Sidebar from '../../../../components/Sidebar';
+import AdminLayout from '../../../../components/AdminLayout';
 import { ChevronLeft, ChevronDown, Trash2, ChevronRight, Plus, Search, Upload, X } from 'lucide-react';
 import { uploadProductImage, updateProduct, deleteProductImage, fetchProduct } from '../../../../lib/productApi';
 import { toast } from 'sonner';
@@ -449,20 +448,8 @@ export default function EditProduct() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-[#f1f1f1]">
-      {/* Header */}
-      <Header />
-
-      {/* Main Layout with Sidebar and Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-[#f1f1f1] lg:rounded-tl-3xl">
-          {/* Main Content Area */}
-          <main className="flex-1 overflow-auto bg-[#f1f1f1]">
-            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+    <AdminLayout>
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
               {/* Page Header */}
               <div className="mb-4 sm:mb-6">
                 <div className="flex items-center gap-2">
@@ -750,11 +737,11 @@ export default function EditProduct() {
                       <div className="p-4">
                         <div className="border border-[#c9cccf] rounded-lg overflow-hidden">
                           <div className="flex border-b border-[#c9cccf] bg-[#f6f6f7]">
-                            <div className="flex-1 px-3 py-2 text-[12px] font-medium text-[#303030]">Location</div>
+                            <div className="flex-1 px-3 py-2 text-[12px] font-medium text-[#303030]">Items</div>
                             <div className="w-32 px-3 py-2 text-[12px] font-medium text-[#303030] text-right">Quantity</div>
                           </div>
                           <div className="flex">
-                            <div className="flex-1 px-3 py-2 text-[13px] text-[#303030]">Shop location</div>
+                            <div className="flex-1 px-3 py-2 text-[13px] text-[#303030]">Inventory Items</div>
                             <div className="w-32 px-2 py-1">
                               <input
                                 type="number"
@@ -962,15 +949,7 @@ export default function EditProduct() {
                           </div>
 
                           {/* Action Buttons */}
-                          <div className="flex items-center justify-end pt-2">
-                            <button
-                              onClick={doneVariantForm}
-                              className="px-3 py-1.5 bg-[#303030] text-white text-[12px] font-semibold rounded-lg hover:bg-[#1a1a1a] transition-colors"
-                              type="button"
-                            >
-                              Done
-                            </button>
-                          </div>
+                         
                         </div>
                       </div>
                     ))}
@@ -1178,34 +1157,31 @@ export default function EditProduct() {
                 </div>
               </div>
 
-              {/* Error Message */}
-              {error && (
-                <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-[13px] text-red-600">{error}</p>
-                </div>
-              )}
+        {/* Error Message */}
+        {error && (
+          <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-[13px] text-red-600">{error}</p>
+          </div>
+        )}
 
-              {/* Update Button */}
-              <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-end gap-3">
-                <button 
-                  onClick={() => router.push('/adminDashboard')}
-                  className="px-4 py-2 bg-white border border-[#c9cccf] text-[#303030] text-[13px] font-semibold rounded-lg hover:bg-gray-50 transition-colors order-2 sm:order-1"
-                  disabled={saving}
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={handleUpdateProduct}
-                  disabled={saving || uploadingImages}
-                  className="px-4 py-2 bg-[#303030] text-white text-[13px] font-semibold rounded-lg hover:bg-[#1a1a1a] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed order-1 sm:order-2"
-                >
-                  {saving ? 'Updating...' : 'Update Product'}
-                </button>
-              </div>
-            </div>
-          </main>
+        {/* Update Button */}
+        <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-end gap-3">
+          <button 
+            onClick={() => router.push('/adminDashboard')}
+            className="px-4 py-2 bg-white border border-[#c9cccf] text-[#303030] text-[13px] font-semibold rounded-lg hover:bg-gray-50 transition-colors order-2 sm:order-1"
+            disabled={saving}
+          >
+            Cancel
+          </button>
+          <button 
+            onClick={handleUpdateProduct}
+            disabled={saving || uploadingImages}
+            className="px-4 py-2 bg-[#303030] text-white text-[13px] font-semibold rounded-lg hover:bg-[#1a1a1a] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed order-1 sm:order-2"
+          >
+            {saving ? 'Updating...' : 'Update Product'}
+          </button>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

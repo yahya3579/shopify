@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '../../../lib/mongodb';
 import GiftCard from '../../../models/GiftCard';
 import User from '../../../models/User';
-import { verifyAuth } from '../../../lib/auth';
+import { verifyToken } from '../../../lib/auth';
 
 // GET all gift cards with filtering, pagination, and search
 export async function GET(request) {

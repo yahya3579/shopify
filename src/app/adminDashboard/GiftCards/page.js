@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Header from '@/components/Header';
-import Sidebar from '@/components/Sidebar';
+import AdminLayout from '@/components/AdminLayout';
 
 export default function GiftCardsPage() {
   const [giftCards, setGiftCards] = useState([]);
@@ -138,28 +137,19 @@ export default function GiftCardsPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col h-screen bg-[#f1f1f1]">
-        <Header />
-        <div className="flex flex-1 overflow-hidden">
-          <Sidebar />
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-[#6d7175]">Loading gift cards...</div>
-          </div>
+      <AdminLayout>
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-[#6d7175]">Loading gift cards...</div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
   // Show empty state if no gift cards
   if (giftCards.length === 0) {
     return (
-      <div className="flex flex-col h-screen bg-[#f1f1f1]">
-        <Header />
-        <div className="flex flex-1 overflow-hidden">
-          <Sidebar />
-          <div className="flex-1 flex flex-col overflow-hidden bg-[#f1f1f1] rounded-tl-3xl">
-            <main className="flex-1 overflow-auto bg-[#f1f1f1]">
-              <div className="w-full px-6 py-6">
+      <AdminLayout>
+        <div className="w-full px-4 lg:px-6 py-4 lg:py-6">
                 <div className="mb-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -234,23 +224,15 @@ export default function GiftCardsPage() {
                     Learn more about gift cards
                   </button>
                 </div>
-              </div>
-            </main>
-          </div>
-        </div>
       </div>
-    );
+    </AdminLayout>
+  );
   }
 
   // Show table view if there are gift cards
   return (
-    <div className="flex flex-col h-screen bg-[#f1f1f1]">
-      <Header />
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
-        <div className="flex-1 flex flex-col overflow-hidden bg-[#f1f1f1] rounded-tl-3xl">
-          <main className="flex-1 overflow-auto bg-[#f1f1f1]">
-            <div className="w-full px-6 py-6">
+    <AdminLayout>
+      <div className="w-full px-4 lg:px-6 py-4 lg:py-6">
               {/* Page Header */}
               <div className="mb-6">
                 <div className="flex items-center justify-between">
@@ -455,10 +437,7 @@ export default function GiftCardsPage() {
                   Learn more about gift cards
                 </button>
               </div>
-            </div>
-          </main>
-        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

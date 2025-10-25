@@ -8,6 +8,7 @@ export default function Sidebar({ isOpen, onClose }) {
   const [activeMenu, setActiveMenu] = useState('products');
   const [activeSubItem, setActiveSubItem] = useState('collections'); // Track active sub-item
 
+
   // Close sidebar when clicking outside on mobile
   useEffect(() => {
     const handleClickOutside = (event) => {
