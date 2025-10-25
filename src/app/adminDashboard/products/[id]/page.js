@@ -1,13 +1,21 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Header from '../../../components/Header';
-import Sidebar from '../../../components/Sidebar';
+import { useParams, useRouter } from 'next/navigation';
+import Header from '../../../../components/Header';
+import Sidebar from '../../../../components/Sidebar';
 import { ChevronLeft, ChevronDown, Trash2, ChevronRight, Plus, Search, Upload, X } from 'lucide-react';
-import { uploadProductImage, createProduct, deleteProductImage } from '../../../lib/productApi';
+import { uploadProductImage, updateProduct, deleteProductImage, fetchProduct } from '../../../../lib/productApi';
 import { toast } from 'sonner';
 
-export default function AddProduct() {
+export default function EditProduct() {
+  const params = useParams();
+  const router = useRouter();
+  const productId = params.id;
+
+  // Loading state
+  const [loading, setLoading] = useState(true);
+  const [productNotFound, setProductNotFound] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
@@ -96,6 +104,60 @@ export default function AddProduct() {
     { name: 'Product Add-Ons', hasSubcategories: true, subcategories: ['Warranties', 'Installation', 'Maintenance', 'Support'] },
     { name: 'Bundles', hasSubcategories: false }
   ];
+
+  // Fetch product data on mount
+  useEffect(() => {
+    const loadProduct = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchProduct(productId);
+        
+        if (response.success && response.data) {
+          const product = response.data;
+          
+          // Populate all fields
+          setTitle(product.title || '');
+          setDescription(product.description || '');
+          setCategory(product.category || '');
+          setPrice(product.price?.toString() || '');
+          setCompareAtPrice(product.compareAtPrice?.toString() || '');
+          setCostPerItem(product.costPerItem?.toString() || '');
+          setInventoryTracked(product.inventoryTracked || false);
+          setQuantity(product.inventory && product.inventory[0] ? product.inventory[0].quantity?.toString() : '0');
+          setSku(product.sku || '');
+          setBarcode(product.barcode || '');
+          setPhysicalProduct(product.physicalProduct || false);
+          setWeight(product.weight?.value?.toString() || '0.0');
+          setWeightUnit(product.weight?.unit || 'kg');
+          setVariants(product.variants || []);
+          setStatus(product.status || 'Draft');
+          setProductType(product.productType || '');
+          setVendor(product.vendor || '');
+          setTags(product.tags ? product.tags.join(', ') : '');
+          setSelectedCollections(product.collections || []);
+          setUploadedImages(product.media || []);
+          
+          // Show advanced sections if data exists
+          if (product.compareAtPrice || product.costPerItem) {
+            setShowAdvancedPricing(true);
+          }
+          if (product.sku || product.barcode) {
+            setShowAdvancedInventory(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading product:', error);
+        setError('Failed to load product');
+        setProductNotFound(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (productId) {
+      loadProduct();
+    }
+  }, [productId]);
 
   // Click outside handler
   useEffect(() => {
@@ -299,8 +361,8 @@ export default function AddProduct() {
     }
   };
 
-  // Save product handler
-  const handleSaveProduct = async () => {
+  // Update product handler
+  const handleUpdateProduct = async () => {
     // Validation
     if (!title.trim()) {
       setError('Product title is required');
@@ -341,21 +403,50 @@ export default function AddProduct() {
         themeTemplate: 'Default product'
       };
 
-      const result = await createProduct(productData);
+      const result = await updateProduct(productId, productData);
       
       if (result.success) {
-        toast.success('Product created successfully!');
+        toast.success('Product updated successfully!');
         // Redirect to products page
-        window.location.href = '/adminDashboard';
+        router.push('/adminDashboard');
       }
     } catch (error) {
-      console.error('Failed to create product:', error);
-      toast.error(error.message || 'Failed to create product. Please try again.');
-      setError(error.message || 'Failed to create product. Please try again.');
+      console.error('Failed to update product:', error);
+      toast.error(error.message || 'Failed to update product. Please try again.');
+      setError(error.message || 'Failed to update product. Please try again.');
     } finally {
       setSaving(false);
     }
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-[#f1f1f1]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#303030] mx-auto mb-4"></div>
+          <p className="text-[#303030]">Loading product...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Product not found state
+  if (productNotFound) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-[#f1f1f1]">
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold text-[#303030] mb-4">Product not found</h1>
+          <button 
+            onClick={() => router.push('/adminDashboard')}
+            className="px-4 py-2 bg-[#303030] text-white text-[13px] font-semibold rounded-lg hover:bg-[#1a1a1a]"
+          >
+            Back to Products
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen bg-[#f1f1f1]">
@@ -393,7 +484,7 @@ export default function AddProduct() {
                   </svg>
                   
                   {/* Page Title */}
-                  <h1 className="text-[20px] font-semibold text-[#303030]" tabIndex="-1">Add product</h1>
+                  <h1 className="text-[20px] font-semibold text-[#303030]" tabIndex="-1">Edit Product</h1>
                 </div>
               </div>
 
@@ -808,13 +899,23 @@ export default function AddProduct() {
                                 <label className="block text-[13px] font-medium text-[#303030] mb-1.5">
                                   Option name
                                 </label>
-                                <input
-                                  type="text"
-                                  placeholder="Size"
-                                  value={variant.optionName}
-                                  onChange={(e) => updateVariantOptionName(variant.id, e.target.value)}
-                                  className="w-full px-3 py-2 border border-[#c9cccf] rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-[#005bd3] focus:border-transparent"
-                                />
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="text"
+                                    placeholder="Size"
+                                    value={variant.optionName}
+                                    onChange={(e) => updateVariantOptionName(variant.id, e.target.value)}
+                                    className="flex-1 px-3 py-2 border border-[#c9cccf] rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-[#005bd3] focus:border-transparent"
+                                  />
+                                  <button
+                                    onClick={() => deleteVariantOption(variant.id)}
+                                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                    type="button"
+                                    title="Delete this option"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </div>
                               </div>
 
                               {/* Option Values */}
@@ -861,14 +962,7 @@ export default function AddProduct() {
                           </div>
 
                           {/* Action Buttons */}
-                          <div className="flex items-center justify-between pt-2">
-                            <button
-                              onClick={() => deleteVariantOption(variant.id)}
-                              className="px-3 py-1.5 text-[12px] text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                              type="button"
-                            >
-                              Delete
-                            </button>
+                          <div className="flex items-center justify-end pt-2">
                             <button
                               onClick={doneVariantForm}
                               className="px-3 py-1.5 bg-[#303030] text-white text-[12px] font-semibold rounded-lg hover:bg-[#1a1a1a] transition-colors"
@@ -1091,21 +1185,21 @@ export default function AddProduct() {
                 </div>
               )}
 
-              {/* Save Button */}
+              {/* Update Button */}
               <div className="mt-6 flex justify-end gap-3">
                 <button 
-                  onClick={() => window.history.back()}
+                  onClick={() => router.push('/adminDashboard')}
                   className="px-4 py-2 bg-white border border-[#c9cccf] text-[#303030] text-[13px] font-semibold rounded-lg hover:bg-gray-50 transition-colors"
                   disabled={saving}
                 >
                   Cancel
                 </button>
                 <button 
-                  onClick={handleSaveProduct}
+                  onClick={handleUpdateProduct}
                   disabled={saving || uploadingImages}
                   className="px-4 py-2 bg-[#303030] text-white text-[13px] font-semibold rounded-lg hover:bg-[#1a1a1a] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  {saving ? 'Saving...' : 'Save Product'}
+                  {saving ? 'Updating...' : 'Update Product'}
                 </button>
               </div>
             </div>

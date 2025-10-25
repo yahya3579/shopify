@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import { ChevronDown, Search, Edit, Upload, Image, PlayCircle, Link, MoreHorizontal, Code, Trash2, Calendar, Sliders, Info } from 'lucide-react';
 
 export default function CreateGiftCardProductPage() {
+  const router = useRouter();
   const [title, setTitle] = useState('My Store gift card');
   const [description, setDescription] = useState('');
   const [denominations, setDenominations] = useState(['10.00', '25.00', '50.00', '100.00']);
@@ -16,6 +18,12 @@ export default function CreateGiftCardProductPage() {
   const [status, setStatus] = useState('Active');
   const [themeTemplate, setThemeTemplate] = useState('Default product');
   const [giftCardTemplate, setGiftCardTemplate] = useState('gift_card');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  
+  // Media state
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
 
   const addDenomination = () => {
     setDenominations([...denominations, '']);
@@ -29,6 +37,120 @@ export default function CreateGiftCardProductPage() {
     const newDenominations = [...denominations];
     newDenominations[index] = value;
     setDenominations(newDenominations);
+  };
+
+  // Image upload handlers
+  const handleImageUpload = async (event) => {
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+
+    setUploadingImages(true);
+    setError('');
+
+    try {
+      const uploadPromises = files.map(async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('/api/products/gift-card/upload-image', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await response.json();
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to upload image');
+        }
+
+        return {
+          url: data.url,
+          filename: data.filename,
+          type: 'image',
+          alt: '',
+        };
+      });
+
+      const uploadedFiles = await Promise.all(uploadPromises);
+      setUploadedImages(prev => [...prev, ...uploadedFiles]);
+    } catch (error) {
+      console.error('Error uploading images:', error);
+      setError(error.message || 'Failed to upload images');
+    } finally {
+      setUploadingImages(false);
+    }
+  };
+
+  const handleRemoveImage = async (index) => {
+    const image = uploadedImages[index];
+    
+    try {
+      // Delete from server
+      await fetch(`/api/products/gift-card/upload-image?filename=${image.filename}`, {
+        method: 'DELETE',
+      });
+    } catch (error) {
+      console.error('Error deleting image from server:', error);
+    }
+
+    // Remove from state
+    setUploadedImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleImageAltChange = (index, alt) => {
+    setUploadedImages(prev => 
+      prev.map((img, i) => i === index ? { ...img, alt } : img)
+    );
+  };
+
+  const handleSaveGiftCardProduct = async () => {
+    if (!title.trim()) {
+      setError('Product title is required');
+      return;
+    }
+
+    const validDenominations = denominations.filter(d => d && parseFloat(d) > 0);
+    if (validDenominations.length === 0) {
+      setError('At least one valid denomination is required');
+      return;
+    }
+
+    setSaving(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/products/gift-card', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          denominations: validDenominations,
+          productType,
+          vendor,
+          tags,
+          status,
+          themeTemplate,
+          giftCardTemplate,
+          media: uploadedImages,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Redirect to main products page to see the created gift card product
+        router.push('/adminDashboard');
+      } else {
+        setError(data.error || 'Failed to create gift card product');
+      }
+    } catch (error) {
+      console.error('Error creating gift card product:', error);
+      setError('Failed to create gift card product');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -58,7 +180,7 @@ export default function CreateGiftCardProductPage() {
                     </svg>
                     
                   </a>
-                  <ChevronDown className="w-4 h-4 text-[#8A8A8A] rotate-[-90deg]" />
+                  <ChevronDown className="w-4 h-4 text-[#8A8A8A] -rotate-90" />
                   <h1 className="text-[24px] font-semibold text-[#303030]">Create gift card product</h1>
                 </div>
               </div>
@@ -194,17 +316,64 @@ export default function CreateGiftCardProductPage() {
                       <div className="space-y-4">
                         <div>
                           <label className="block text-[14px] font-medium text-[#303030] mb-2">Media</label>
+                          
+                          {/* Uploaded Images Display */}
+                          {uploadedImages.length > 0 && (
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                              {uploadedImages.map((image, index) => (
+                                <div key={index} className="relative group">
+                                  <img
+                                    src={image.url}
+                                    alt={image.alt || `Gift card image ${index + 1}`}
+                                    className="w-full h-32 object-cover rounded-lg border border-[#c9cccf]"
+                                  />
+                                  <button
+                                    onClick={() => handleRemoveImage(index)}
+                                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                                  >
+                                    <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                                      <path d="M8 8.707l3.646 3.647.708-.707L8.707 8l3.647-3.646-.707-.708L8 7.293 4.354 3.646l-.707.708L7.293 8l-3.646 3.646.707.708L8 8.707z"></path>
+                                    </svg>
+                                  </button>
+                                  <div className="mt-2">
+                                    <input
+                                      type="text"
+                                      placeholder="Alt text"
+                                      value={image.alt}
+                                      onChange={(e) => handleImageAltChange(index, e.target.value)}
+                                      className="w-full px-2 py-1 border border-[#c9cccf] rounded text-[12px] focus:outline-none focus:ring-1 focus:ring-[#005bd3]"
+                                    />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Upload Area */}
                           <div className="border-2 border-dashed border-[#c9cccf] rounded-lg p-8 text-center">
                             <div className="space-y-4">
                               <div className="flex items-center justify-center gap-4">
-                                <button className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[12px] font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                                  Upload new
-                                </button>
-                                <button className="px-4 py-2 text-[#005bd3] text-[12px] font-medium hover:underline transition-colors">
+                                <label className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[12px] font-medium rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                                  {uploadingImages ? 'Uploading...' : 'Upload new'}
+                                  <input
+                                    type="file"
+                                    multiple
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
+                                    disabled={uploadingImages}
+                                    className="hidden"
+                                  />
+                                </label>
+                                <button 
+                                  disabled
+                                  className="px-4 py-2 text-[#005bd3] text-[12px] font-medium hover:underline transition-colors opacity-50 cursor-not-allowed"
+                                >
                                   Select existing
                                 </button>
                               </div>
-                              <p className="text-[12px] text-[#6d7175]">Accepts images, videos, or 3D models</p>
+                              <p className="text-[12px] text-[#6d7175]">
+                                {uploadingImages ? 'Uploading images...' : 'Accepts images (JPG, PNG, GIF, WebP)'}
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -428,10 +597,21 @@ export default function CreateGiftCardProductPage() {
                 </div>
               </div>
 
+              {/* Error Message */}
+              {error && (
+                <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-600 text-sm">{error}</p>
+                </div>
+              )}
+
               {/* Save Button */}
               <div className="mt-6 flex justify-end">
-                <button className="px-4 py-2 bg-[#2e2e2e] text-white text-[12px] font-semibold rounded-lg hover:bg-[#004494] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                  Save gift card product
+                <button 
+                  onClick={handleSaveGiftCardProduct}
+                  disabled={saving}
+                  className="px-4 py-2 bg-[#2e2e2e] text-white text-[12px] font-semibold rounded-lg hover:bg-[#004494] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {saving ? 'Saving...' : 'Save gift card product'}
                 </button>
               </div>
             </div>

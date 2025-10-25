@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
+import clientPromise from '@/lib/mongodbClient';
 import { comparePassword, generateToken } from '@/lib/auth';
 
 export async function POST(request) {

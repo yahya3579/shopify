@@ -1,25 +1,31 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import Header from '../../../../components/Header';
 import Sidebar from '../../../../components/Sidebar';
 import { ChevronLeft, X, Upload } from 'lucide-react';
 import { 
   uploadCollectionImage, 
   deleteCollectionImage, 
-  createCollection, 
+  updateCollection,
+  fetchCollection,
   searchProductsForCollection 
 } from '../../../../lib/collectionApi';
 import { toast } from 'sonner';
 
-export default function AddCollection() {
+export default function EditCollection() {
   const router = useRouter();
+  const params = useParams();
+  const collectionId = params.id;
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [collectionType, setCollectionType] = useState('manual');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('BEST_SELLING');
+  const [showSearchField, setShowSearchField] = useState(false);
+  const searchInputRef = useRef(null);
   
   // Image state
   const [imageUrl, setImageUrl] = useState('');
@@ -32,22 +38,70 @@ export default function AddCollection() {
   
   // Form state
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Load collection data on mount
+  useEffect(() => {
+    if (collectionId) {
+      loadCollectionData();
+    }
+  }, [collectionId]);
 
   // Load initial products (latest 4)
   useEffect(() => {
-    loadProducts();
-  }, [sortBy]);
+    if (!loading) {
+      loadProducts();
+    }
+  }, [sortBy, loading]);
+
+  // Load collection data
+  const loadCollectionData = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const result = await fetchCollection(collectionId);
+      
+      if (result.success && result.data) {
+        const collection = result.data;
+        setTitle(collection.title || '');
+        setDescription(collection.description || '');
+        setCollectionType(collection.collectionType || 'manual');
+        setSortBy(collection.sortBy || 'BEST_SELLING');
+        setImageUrl(collection.image?.url || '');
+        
+        // Set selected products (extract IDs)
+        if (collection.products && Array.isArray(collection.products)) {
+          const productIds = collection.products.map(p => 
+            typeof p === 'string' ? p : p._id
+          );
+          setSelectedProducts(productIds);
+        }
+      } else {
+        setError('Failed to load collection data');
+      }
+    } catch (error) {
+      console.error('Error loading collection:', error);
+      setError('Failed to load collection data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Load products based on search or default
   const loadProducts = async () => {
     try {
       setLoadingProducts(true);
-      const result = await searchProductsForCollection({
-        search: searchQuery,
+      const params = {
         limit: 4,
         sortBy: sortBy
-      });
+      };
+      
+      if (searchQuery.trim()) {
+        params.search = searchQuery;
+      }
+      
+      const result = await searchProductsForCollection(params);
       setSearchResults(result.data || []);
     } catch (error) {
       console.error('Error loading products:', error);
@@ -56,6 +110,12 @@ export default function AddCollection() {
       setLoadingProducts(false);
     }
   };
+
+  // Filter products based on search query
+  const filteredProducts = searchResults.filter(product => {
+    if (!searchQuery.trim()) return true;
+    return product.title.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   // Handle product search
   const handleProductSearch = async (query) => {
@@ -146,20 +206,19 @@ export default function AddCollection() {
           url: imageUrl,
           alt: title.trim()
         },
-        themeTemplate: 'Default collection',
-        status: 'Draft'
+        themeTemplate: 'Default collection'
       };
 
-      const result = await createCollection(collectionData);
+      const result = await updateCollection(collectionId, collectionData);
       
       if (result.success) {
-        toast.success('Collection created successfully!');
+        toast.success('Collection updated successfully!');
         router.push('/adminDashboard/Collections');
       }
     } catch (error) {
-      console.error('Error creating collection:', error);
-      toast.error(error.message || 'Failed to create collection. Please try again.');
-      setError(error.message || 'Failed to create collection. Please try again.');
+      console.error('Error updating collection:', error);
+      toast.error(error.message || 'Failed to update collection. Please try again.');
+      setError(error.message || 'Failed to update collection. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -202,10 +261,19 @@ export default function AddCollection() {
                   </svg>
                   
                   {/* Page Title */}
-                  <h1 className="text-[20px] font-semibold text-[#303030]" tabIndex="-1">Add collection</h1>
+                  <h1 className="text-[20px] font-semibold text-[#303030]" tabIndex="-1">
+                    {loading ? 'Loading...' : title || 'Edit collection'}
+                  </h1>
                 </div>
               </div>
 
+              {/* Loading State */}
+              {loading ? (
+                <div className="flex justify-center items-center py-20">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#303030]"></div>
+                </div>
+              ) : (
+                <>
               {/* Two Column Layout */}
               <div className="flex gap-6">
                 {/* Left Column - Main Content */}
@@ -381,30 +449,60 @@ export default function AddCollection() {
                   {/* Products Card */}
                   <div className="bg-white rounded-xl shadow-sm p-6">
                     <div className="space-y-4">
-                      <h2 className="text-[16px] font-semibold text-[#303030]">Products</h2>
-                      <div className="flex gap-4">
-                        <div className="flex-1">
-                          <div className="relative">
-                            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#616161]" viewBox="0 0 16 16" fill="currentColor">
-                              <path fillRule="evenodd" d="M10.323 11.383a5.5 5.5 0 1 1-3.323-9.883 5.5 5.5 0 0 1 4.383 8.823l2.897 2.897a.749.749 0 1 1-1.06 1.06zm.677-4.383c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4"></path>
-                            </svg>
-                            <input
-                              type="text"
-                              placeholder="Search products"
-                              value={searchQuery}
-                              onChange={(e) => handleProductSearch(e.target.value)}
-                              className="w-full pl-10 pr-3 py-2 border border-[#c9cccf] rounded-lg text-[14px] focus:outline-none focus:ring-2 focus:ring-[#005bd3] focus:border-transparent"
-                            />
-                          </div>
-                        </div>
+                      <div className="flex items-center justify-between">
+                        <h2 className="text-[16px] font-semibold text-[#303030]">Products</h2>
                         <button 
-                          onClick={loadProducts}
-                          disabled={loadingProducts}
-                          className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[14px] font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                          onClick={() => {
+                            setShowSearchField(!showSearchField);
+                            if (!showSearchField && searchInputRef.current) {
+                              setTimeout(() => searchInputRef.current.focus(), 100);
+                            }
+                          }}
+                          className="p-2 text-[#5c5f62] hover:bg-gray-100 rounded"
                         >
-                          {loadingProducts ? 'Loading...' : 'Browse'}
+                          <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                            <path fillRule="evenodd" d="M10.323 11.383a5.5 5.5 0 1 1-3.323-9.883 5.5 5.5 0 0 1 4.383 8.823l2.897 2.897a.749.749 0 1 1-1.06 1.06zm.677-4.383c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4"></path>
+                          </svg>
                         </button>
                       </div>
+
+                      {/* Expandable Search Input */}
+                      {showSearchField && (
+                        <div className="flex gap-4">
+                          <div className="flex-1">
+                            <div className="relative">
+                              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#616161]" viewBox="0 0 16 16" fill="currentColor">
+                                <path fillRule="evenodd" d="M10.323 11.383a5.5 5.5 0 1 1-3.323-9.883 5.5 5.5 0 0 1 4.383 8.823l2.897 2.897a.749.749 0 1 1-1.06 1.06zm.677-4.383c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4"></path>
+                              </svg>
+                              <input
+                                type="text"
+                                placeholder="Search products"
+                                value={searchQuery}
+                                onChange={(e) => handleProductSearch(e.target.value)}
+                                className="w-full pl-10 pr-3 py-2 border border-[#c9cccf] rounded-lg text-[14px] focus:outline-none focus:ring-2 focus:ring-[#005bd3] focus:border-transparent"
+                                ref={searchInputRef}
+                              />
+                              {searchQuery && (
+                                <button
+                                  onClick={() => setSearchQuery('')}
+                                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#616161] hover:text-[#303030]"
+                                >
+                                  <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M8 8.707l3.646 3.647.708-.707L8.707 8l3.647-3.646-.707-.708L8 7.293 4.354 3.646l-.707.708L7.293 8l-3.646 3.646.707.708L8 8.707z"></path>
+                                  </svg>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          <button 
+                            onClick={loadProducts}
+                            disabled={loadingProducts}
+                            className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[14px] font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                          >
+                            {loadingProducts ? 'Loading...' : 'Browse'}
+                          </button>
+                        </div>
+                      )}
                       <div className="flex items-center gap-2">
                         <span className="text-[14px] text-[#303030]">Sort:</span>
                         <select
@@ -428,9 +526,9 @@ export default function AddCollection() {
                         <div className="flex justify-center py-12">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#303030]"></div>
                         </div>
-                      ) : searchResults.length > 0 ? (
+                      ) : filteredProducts.length > 0 ? (
                         <div className="space-y-2">
-                          {searchResults.map((product) => (
+                          {filteredProducts.map((product) => (
                             <div
                               key={product._id}
                               className={`flex items-center gap-4 p-3 border rounded-lg cursor-pointer transition-colors ${
@@ -482,8 +580,20 @@ export default function AddCollection() {
                             alt="No Products" 
                             className="w-16 h-16 mb-4"
                           />
-                          <p className="text-[14px] text-[#303030] font-medium">No products found.</p>
-                          <p className="text-[14px] text-[#303030]">Try a different search or browse all products.</p>
+                          <p className="text-[14px] text-[#303030] font-medium">
+                            {searchQuery ? `No products match "${searchQuery}"` : 'No products found.'}
+                          </p>
+                          <p className="text-[14px] text-[#303030]">
+                            {searchQuery ? 'Try a different search term.' : 'Try a different search or browse all products.'}
+                          </p>
+                          {searchQuery && (
+                            <button
+                              onClick={() => setSearchQuery('')}
+                              className="mt-4 px-4 py-2 bg-[#303030] text-white text-[13px] font-semibold rounded-lg hover:bg-[#1a1a1a] transition-colors"
+                            >
+                              Clear search
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
@@ -625,9 +735,11 @@ export default function AddCollection() {
                       : 'bg-[#c9cccf] text-[#616161] cursor-not-allowed'
                   }`}
                 >
-                  {saving ? 'Saving...' : 'Save'}
+                  {saving ? 'Updating...' : 'Update'}
                 </button>
               </div>
+              </>
+              )}
             </div>
           </main>
         </div>

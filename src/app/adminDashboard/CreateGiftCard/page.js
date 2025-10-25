@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import { ChevronDown, Search, Edit, Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 export default function CreateGiftCardPage() {
+  const router = useRouter();
   const [giftCardCode, setGiftCardCode] = useState('gfxjkvjppy7xg8gk');
   const [initialValue, setInitialValue] = useState('10.00');
   const [expirationType, setExpirationType] = useState('set-expiration');
@@ -25,6 +27,9 @@ export default function CreateGiftCardPage() {
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const calendarRef = useRef(null);
   const customerDropdownRef = useRef(null);
   const createCustomerModalRef = useRef(null);
@@ -81,6 +86,91 @@ export default function CreateGiftCardPage() {
     return date.getMonth() === currentMonth.getMonth();
   };
 
+  // Generate random gift card code
+  const generateGiftCardCode = () => {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let code = '';
+    for (let i = 0; i < 16; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setGiftCardCode(code);
+  };
+
+  // Handle form submission
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true);
+      setError('');
+      setSuccessMessage('');
+
+      // Validation
+      if (!giftCardCode || giftCardCode.trim() === '') {
+        setError('Gift card code is required');
+        setIsLoading(false);
+        return;
+      }
+
+      if (!initialValue || parseFloat(initialValue) <= 0) {
+        setError('Initial value must be greater than 0');
+        setIsLoading(false);
+        return;
+      }
+
+      if (expirationType === 'set-expiration' && !expirationDate) {
+        setError('Expiration date is required when expiration type is set');
+        setIsLoading(false);
+        return;
+      }
+
+      // Parse customer data from the customer string or newCustomer object
+      let customerData = {
+        firstName: newCustomer.firstName || '',
+        lastName: newCustomer.lastName || '',
+        email: newCustomer.email || '',
+        phone: newCustomer.phone || '',
+      };
+
+      // Prepare gift card data
+      const giftCardData = {
+        giftCardCode: giftCardCode.trim(),
+        initialValue: parseFloat(initialValue),
+        currency: 'Rs',
+        expirationType: expirationType,
+        expirationDate: expirationType === 'set-expiration' ? expirationDate : null,
+        customer: customerData,
+        notes: notes || '',
+      };
+
+      // Make API call
+      const response = await fetch('/api/giftcards', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(giftCardData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create gift card');
+      }
+
+      setSuccessMessage('Gift card created successfully!');
+      
+      // Redirect to gift cards page after 1.5 seconds
+      setTimeout(() => {
+        router.push('/adminDashboard/GiftCards');
+      }, 1500);
+
+    } catch (err) {
+      console.error('Error creating gift card:', err);
+      setError(err.message || 'Failed to create gift card');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Click outside handler
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -121,20 +211,45 @@ export default function CreateGiftCardPage() {
             <div className="max-w-[1200px] mx-auto px-12 py-6">
               {/* Page Header */}
               <div className="mb-6">
-                <div className="flex items-center gap-2">
-                   <a 
-                     href="/adminDashboard/GiftCards"
-                     className="flex items-center gap-2 text-[#1b1b1b] hover:underline"
-                   >
-                     <svg className="w-5 h-5" viewBox="0 0 16 16" fill="currentColor">
-                       <path fillRule="evenodd" d="M13.5 3.5h-5.5v.75a.75.75 0 0 1-1.5 0v-.75h-4a.5.5 0 0 0-.5.5v3.043a.75.75 0 0 1 0 1.414v3.543a.5.5 0 0 0 .5.5h4v-1a.75.75 0 0 1 1.5 0v1h5.5a.5.5 0 0 0 .5-.5v-3.5h-1.25a.75.75 0 0 1 0-1.5h1.25v-3a.5.5 0 0 0-.5-.5m2 4.25v-3.75a2 2 0 0 0-2-2h-11a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2zm-8.703-1.758a2.117 2.117 0 0 0-4.047.88c0 1.171.95 2.128 2.125 2.128h.858c-.595.51-1.256.924-1.84 1.008a.749.749 0 1 0 .213 1.484c1.11-.158 2.128-.919 2.803-1.53a11 11 0 0 0 .341-.322q.16.158.34.322c.676.611 1.693 1.372 2.804 1.53a.749.749 0 1 0 .212-1.484c-.583-.084-1.244-.498-1.839-1.008h.858a2.13 2.13 0 0 0 2.125-2.128 2.118 2.118 0 0 0-4.047-.88l-.453.996zm-.962 1.508h-.96a.627.627 0 0 1-.625-.628.619.619 0 0 1 1.182-.259zm3.79 0h-.96l.403-.887a.618.618 0 0 1 1.182.259.63.63 0 0 1-.625.628"></path>
-                     </svg>
-                     
-                   </a>
-                  <ChevronDown className="w-4 h-4 text-[#8A8A8A] rotate-[-90deg]" />
-                  <h1 className="text-[20px] font-semibold text-[#303030]">Create gift card</h1>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                     <a 
+                       href="/adminDashboard/GiftCards"
+                       className="flex items-center gap-2 text-[#1b1b1b] hover:underline"
+                     >
+                       <svg className="w-5 h-5" viewBox="0 0 16 16" fill="currentColor">
+                         <path fillRule="evenodd" d="M13.5 3.5h-5.5v.75a.75.75 0 0 1-1.5 0v-.75h-4a.5.5 0 0 0-.5.5v3.043a.75.75 0 0 1 0 1.414v3.543a.5.5 0 0 0 .5.5h4v-1a.75.75 0 0 1 1.5 0v1h5.5a.5.5 0 0 0 .5-.5v-3.5h-1.25a.75.75 0 0 1 0-1.5h1.25v-3a.5.5 0 0 0-.5-.5m2 4.25v-3.75a2 2 0 0 0-2-2h-11a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2zm-8.703-1.758a2.117 2.117 0 0 0-4.047.88c0 1.171.95 2.128 2.125 2.128h.858c-.595.51-1.256.924-1.84 1.008a.749.749 0 1 0 .213 1.484c1.11-.158 2.128-.919 2.803-1.53a11 11 0 0 0 .341-.322q.16.158.34.322c.676.611 1.693 1.372 2.804 1.53a.749.749 0 1 0 .212-1.484c-.583-.084-1.244-.498-1.839-1.008h.858a2.13 2.13 0 0 0 2.125-2.128 2.118 2.118 0 0 0-4.047-.88l-.453.996zm-.962 1.508h-.96a.627.627 0 0 1-.625-.628.619.619 0 0 1 1.182-.259zm3.79 0h-.96l.403-.887a.618.618 0 0 1 1.182.259.63.63 0 0 1-.625.628"></path>
+                       </svg>
+                       
+                     </a>
+                    <ChevronDown className="w-4 h-4 text-[#8A8A8A] rotate-[-90deg]" />
+                    <h1 className="text-[20px] font-semibold text-[#303030]">Create gift card</h1>
+                  </div>
+                  
+                  {/* Save Button */}
+                  <button
+                    onClick={handleSubmit}
+                    disabled={isLoading}
+                    className="px-4 py-2 bg-[#303030] text-white text-[13px] font-semibold rounded-lg hover:bg-[#1a1a1a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? 'Saving...' : 'Save'}
+                  </button>
                 </div>
               </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-[14px] text-red-600">{error}</p>
+                </div>
+              )}
+
+              {/* Success Message */}
+              {successMessage && (
+                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-[14px] text-green-600">{successMessage}</p>
+                </div>
+              )}
 
               {/* Main Content Grid */}
               <div className="grid grid-cols-3 gap-6">
@@ -148,12 +263,21 @@ export default function CreateGiftCardPage() {
                         {/* Gift Card Code */}
                         <div>
                           <label className="block text-[14px] font-medium text-[#303030] mb-2">Gift card code</label>
-                          <input
-                            type="text"
-                            value={giftCardCode}
-                            onChange={(e) => setGiftCardCode(e.target.value)}
-                            className="w-full px-3 py-2 border border-[#c9cccf] rounded-lg text-[14px] focus:outline-none focus:ring-2 focus:ring-[#005bd3]"
-                          />
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={giftCardCode}
+                              onChange={(e) => setGiftCardCode(e.target.value)}
+                              className="flex-1 px-3 py-2 border border-[#c9cccf] rounded-lg text-[14px] focus:outline-none focus:ring-2 focus:ring-[#005bd3]"
+                            />
+                            <button
+                              type="button"
+                              onClick={generateGiftCardCode}
+                              className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[13px] font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                            >
+                              Generate
+                            </button>
+                          </div>
                         </div>
 
                         {/* Initial Value */}
