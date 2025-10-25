@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Header from '../../../components/Header';
-import Sidebar from '../../../components/Sidebar';
+import AdminLayout from '../../../components/AdminLayout';
 import { ChevronDown, Search, Calendar, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function CreatePurchaseOrder() {
@@ -115,23 +114,11 @@ export default function CreatePurchaseOrder() {
   }, [showCalendar, showSupplierDropdown]);
 
   return (
-    <div className="flex flex-col h-screen bg-[#f1f1f1]">
-      {/* Header */}
-      <Header />
-
-      {/* Main Layout with Sidebar and Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-[#f1f1f1] rounded-tl-3xl">
-          {/* Main Content Area */}
-          <main className="flex-1 overflow-auto bg-[#f1f1f1]">
-            <div className="max-w-[1200px] mx-auto px-6 py-6">
-              {/* Page Header */}
-              <div className="mb-6">
-                <div className="flex items-center gap-2">
+    <AdminLayout>
+      <div className="max-w-[1200px] mx-auto px-4 lg:px-6 py-4 lg:py-6">
+        {/* Page Header */}
+        <div className="mb-4 lg:mb-6">
+          <div className="flex items-center gap-2">
                   {/* Purchase Orders Link */}
                   <a 
                     href="/adminDashboard/PurchaseOrders" 
@@ -148,28 +135,28 @@ export default function CreatePurchaseOrder() {
                   </a>
                   
                   {/* Breadcrumb Separator */}
-                  <svg width="10" height="20" viewBox="0 0 10 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="flex-shrink-0">
+                  <svg width="10" height="20" viewBox="0 0 10 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="shrink-0">
                     <path d="M4 8L6.5 11L4 14" stroke="#8A8A8A" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"></path>
                   </svg>
                   
-                  {/* Page Title */}
-                  <h1 className="text-[20px] font-semibold text-[#303030]" tabIndex="-1">Create purchase order</h1>
-                </div>
-              </div>
+            {/* Page Title */}
+            <h1 className="text-[18px] sm:text-[20px] font-semibold text-[#303030]" tabIndex="-1">Create purchase order</h1>
+          </div>
+        </div>
 
-              {/* Two Column Layout */}
-              <div className="flex gap-6">
-                {/* Left Column - Main Content */}
-                <div className="flex-1 space-y-6 overflow-visible">
+        {/* Two Column Layout */}
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+          {/* Left Column - Main Content */}
+          <div className="flex-1 space-y-4 lg:space-y-6 overflow-visible">
                   {/* Card 1: Supplier and Destination */}
                   <div className="bg-white rounded-xl shadow-sm overflow-visible">
                     <div className="p-4 border-b border-[#e1e1e1]">
                       <h2 className="text-[14px] font-semibold text-[#303030]">Supplier and destination</h2>
                     </div>
-                    <div className="p-4 pb-8">
-                      <div className="flex gap-0 mb-4">
+                    <div className="p-4 lg:p-4 pb-6 lg:pb-8">
+                      <div className="flex flex-col sm:flex-row gap-0 mb-4">
                         {/* Supplier Section */}
-                        <div className="flex-1 pr-4 relative" ref={supplierRef}>
+                        <div className="flex-1 pr-0 sm:pr-4 relative" ref={supplierRef}>
                           <div className="pb-4">
                             <h3 className="text-[13px] font-medium text-[#303030]">
                               <label htmlFor="supplier" id="Supplier">Supplier</label>
@@ -199,7 +186,7 @@ export default function CreatePurchaseOrder() {
                           
                           {/* Supplier Dropdown */}
                           {showSupplierDropdown && (
-                            <div className="absolute top-full left-0 mt-1 bg-white border border-[#c9cccf] rounded-lg shadow-lg z-[9999] w-[300px] overflow-hidden">
+                            <div className="absolute top-full left-0 mt-1 bg-white border border-[#c9cccf] rounded-lg shadow-lg z-9999 w-[300px] overflow-hidden">
                               {/* Focus Tracker */}
                               <div tabIndex="0" className="sr-only"></div>
                               
@@ -235,10 +222,10 @@ export default function CreatePurchaseOrder() {
                         </div>
                         
                         {/* Vertical Divider */}
-                        <div className="w-px bg-[#e1e1e1]"></div>
+                        <div className="hidden sm:block w-px bg-[#e1e1e1]"></div>
                         
                         {/* Destination Section */}
-                        <div className="flex-1 pl-4">
+                        <div className="flex-1 pl-0 sm:pl-4">
                           <div className="pb-4">
                             <h3 className="text-[13px] font-medium text-[#303030]">
                               <label htmlFor="destination" id="Destination">Destination</label>
@@ -267,7 +254,7 @@ export default function CreatePurchaseOrder() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex gap-4">
+                      <div className="flex flex-col sm:flex-row gap-4">
                         <div className="flex-1">
                           <label htmlFor="payment-terms" className="block text-[13px] font-medium text-[#303030] mb-1.5">Payment terms (optional)</label>
                           <div className="relative">
@@ -320,7 +307,7 @@ export default function CreatePurchaseOrder() {
                     <div className="p-4 border-b border-[#e1e1e1]">
                       <h2 className="text-[14px] font-semibold text-[#303030]">Shipment details</h2>
                     </div>
-                    <div className="p-4 space-y-4 pb-8">
+                    <div className="p-4 lg:p-4 space-y-4 pb-6 lg:pb-8">
                       <div className="relative" ref={calendarRef}>
                         <label htmlFor="estimated-arrival" className="block text-[13px] font-medium text-[#303030] mb-1.5">Estimated arrival</label>
                         <div className="relative">
@@ -343,7 +330,7 @@ export default function CreatePurchaseOrder() {
                         
                         {/* Calendar Dropdown */}
                         {showCalendar && (
-                          <div className="absolute top-full left-0 mt-1 bg-white border border-[#c9cccf] rounded-lg shadow-lg z-[9999] w-64 overflow-visible">
+                          <div className="absolute top-full left-0 mt-1 bg-white border border-[#c9cccf] rounded-lg shadow-lg z-9999 w-64 sm:w-64 overflow-visible">
                             {/* Calendar Header */}
                             <div className="flex items-center justify-between p-3 border-b border-[#e1e1e1]">
                               <button
@@ -428,7 +415,7 @@ export default function CreatePurchaseOrder() {
                       <h2 className="text-[14px] font-semibold text-[#303030]">Add products</h2>
                     </div>
                     <div className="p-4">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                         <div className="relative flex-1">
                           <Search className="w-4 h-4 text-[#6d7175] absolute left-3 top-1/2 -translate-y-1/2" />
                           <input
@@ -439,7 +426,7 @@ export default function CreatePurchaseOrder() {
                             className="w-full pl-9 pr-3 py-2 border border-[#c9cccf] rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-[#005bd3]"
                           />
                         </div>
-                        <button className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[13px] font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                        <button className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[13px] font-medium rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap">
                           Browse
                         </button>
                       </div>
@@ -490,8 +477,8 @@ export default function CreatePurchaseOrder() {
                   </div>
                 </div>
 
-                {/* Right Column - Cost Summary */}
-                <div className="w-80">
+          {/* Right Column - Cost Summary */}
+          <div className="w-full lg:w-80">
                   {/* Card 5: Cost summary */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div className="p-4 border-b border-[#e1e1e1] flex items-center justify-between">
@@ -540,16 +527,13 @@ export default function CreatePurchaseOrder() {
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </main>
         </div>
       </div>
 
       {/* Create Supplier Modal */}
       {showCreateSupplierModal && (
-        <div className="fixed inset-0  flex items-center justify-center z-[9999] " style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
-          <div className="bg-white rounded-xl shadow-lg w-[600px] max-h-[90vh] overflow-hidden">
+        <div className="fixed inset-0 flex items-center justify-center z-9999 bg-black bg-opacity-30">
+          <div className="bg-white rounded-xl shadow-lg w-[90vw] sm:w-[600px] max-h-[90vh] overflow-hidden mx-4">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-[#e1e1e1]">
               <h2 className="text-[20px] font-semibold text-[#303030]">Create supplier</h2>
@@ -562,7 +546,7 @@ export default function CreatePurchaseOrder() {
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
               <div className="space-y-4">
                 {/* Company Field */}
                 <div>
@@ -655,7 +639,7 @@ export default function CreatePurchaseOrder() {
                 </div>
 
                 {/* City and Postal Code Row */}
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                   <div className="flex-1">
                     <label htmlFor="city" className="block text-[13px] font-medium text-[#303030] mb-1.5">
                       City
@@ -697,7 +681,7 @@ export default function CreatePurchaseOrder() {
                 </div>
 
                 {/* Email and Phone Row */}
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                   <div className="flex-1">
                     <label htmlFor="email" className="block text-[13px] font-medium text-[#303030] mb-1.5">
                       Email address
@@ -737,7 +721,7 @@ export default function CreatePurchaseOrder() {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex justify-end gap-3 p-6 border-t border-[#e1e1e1]">
+            <div className="flex flex-col sm:flex-row justify-end gap-3 p-4 sm:p-6 border-t border-[#e1e1e1]">
               <button
                 onClick={() => setShowCreateSupplierModal(false)}
                 className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[13px] font-medium rounded-lg hover:bg-gray-50 transition-colors"
@@ -761,8 +745,8 @@ export default function CreatePurchaseOrder() {
 
       {/* Manage Cost Summary Modal */}
       {showManageCostModal && (
-        <div className="fixed inset-0  flex items-center justify-center z-[9999] " style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
-          <div className="bg-white rounded-xl shadow-lg w-[500px] max-h-[80vh] overflow-hidden">
+        <div className="fixed inset-0 flex items-center justify-center z-9999 bg-black bg-opacity-30">
+          <div className="bg-white rounded-xl shadow-lg w-[90vw] sm:w-[500px] max-h-[80vh] overflow-hidden mx-4">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-4 border-b border-[#e1e1e1]">
               <h2 className="text-[16px] font-semibold text-[#303030]">Manage cost summary</h2>
@@ -861,7 +845,7 @@ export default function CreatePurchaseOrder() {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex justify-end gap-3 p-4 border-t border-[#e1e1e1]">
+            <div className="flex flex-col sm:flex-row justify-end gap-3 p-4 border-t border-[#e1e1e1]">
               
               <button
                 onClick={() => setShowManageCostModal(false)}
@@ -882,6 +866,6 @@ export default function CreatePurchaseOrder() {
           </div>
         </div>
       )}
-    </div>
+    </AdminLayout>
   );
 }

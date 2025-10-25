@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import Header from '../../../../components/Header';
-import Sidebar from '../../../../components/Sidebar';
+import AdminLayout from '../../../../components/AdminLayout';
 import { ChevronLeft, X, Upload } from 'lucide-react';
 import { 
   uploadCollectionImage, 
@@ -225,22 +224,10 @@ export default function EditCollection() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#f1f1f1]">
-      {/* Header */}
-      <Header />
-
-      {/* Main Layout with Sidebar and Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-[#f1f1f1] rounded-tl-3xl">
-          {/* Main Content Area */}
-          <main className="flex-1 overflow-auto bg-[#f1f1f1]">
-            <div className="max-w-[1200px] mx-auto px-30 py-6">
+    <AdminLayout>
+      <div className="max-w-[1200px] mx-auto">
               {/* Page Header */}
-              <div className="mb-6">
+              <div className="mb-4 sm:mb-6">
                 <div className="flex items-center gap-2">
                   {/* Collections Link */}
                   <a 
@@ -261,7 +248,7 @@ export default function EditCollection() {
                   </svg>
                   
                   {/* Page Title */}
-                  <h1 className="text-[20px] font-semibold text-[#303030]" tabIndex="-1">
+                  <h1 className="text-[18px] sm:text-[20px] font-semibold text-[#303030]" tabIndex="-1">
                     {loading ? 'Loading...' : title || 'Edit collection'}
                   </h1>
                 </div>
@@ -275,11 +262,11 @@ export default function EditCollection() {
               ) : (
                 <>
               {/* Two Column Layout */}
-              <div className="flex gap-6">
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
                 {/* Left Column - Main Content */}
-                <div className="flex-1 space-y-6">
+                <div className="flex-1 space-y-4 lg:space-y-6">
                   {/* Title Card */}
-                  <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
                     <div className="space-y-4">
                       <div>
                         <label htmlFor="title" className="block text-[14px] font-medium text-[#303030] mb-2">
@@ -298,7 +285,7 @@ export default function EditCollection() {
                   </div>
 
                   {/* Description Card */}
-                  <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
                     <div className="space-y-4">
                       <div>
                         <label className="block text-[14px] font-medium text-[#303030] mb-2">
@@ -306,7 +293,7 @@ export default function EditCollection() {
                         </label>
                         <div className="border border-[#c9cccf] rounded-lg overflow-hidden">
                           {/* Rich Text Editor Toolbar */}
-                          <div className="bg-[#f6f6f7] border-b border-[#c9cccf] px-3 py-2 flex items-center gap-2 flex-wrap">
+                          <div className="bg-[#f6f6f7] border-b border-[#c9cccf] px-2 sm:px-3 py-2 flex items-center gap-1 sm:gap-2 flex-wrap overflow-x-auto">
                             <button className="flex items-center gap-1 px-2 py-1 text-[12px] text-[#303030] hover:bg-gray-200 rounded">
                               Paragraph
                               <svg className="w-3 h-3" viewBox="0 0 16 16" fill="currentColor">
@@ -398,7 +385,7 @@ export default function EditCollection() {
                   </div>
 
                   {/* Collection Type Card */}
-                  <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
                     <div className="space-y-4">
                       <h2 className="text-[16px] font-semibold text-[#303030]">Collection type</h2>
                       <div className="space-y-4">
@@ -447,7 +434,7 @@ export default function EditCollection() {
                   </div>
 
                   {/* Products Card */}
-                  <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h2 className="text-[16px] font-semibold text-[#303030]">Products</h2>
@@ -468,7 +455,7 @@ export default function EditCollection() {
 
                       {/* Expandable Search Input */}
                       {showSearchField && (
-                        <div className="flex gap-4">
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                           <div className="flex-1">
                             <div className="relative">
                               <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#616161]" viewBox="0 0 16 16" fill="currentColor">
@@ -497,7 +484,7 @@ export default function EditCollection() {
                           <button 
                             onClick={loadProducts}
                             disabled={loadingProducts}
-                            className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[14px] font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                            className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[13px] sm:text-[14px] font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 whitespace-nowrap"
                           >
                             {loadingProducts ? 'Loading...' : 'Browse'}
                           </button>
@@ -531,7 +518,7 @@ export default function EditCollection() {
                           {filteredProducts.map((product) => (
                             <div
                               key={product._id}
-                              className={`flex items-center gap-4 p-3 border rounded-lg cursor-pointer transition-colors ${
+                              className={`flex items-center gap-3 sm:gap-4 p-3 border rounded-lg cursor-pointer transition-colors ${
                                 selectedProducts.includes(product._id)
                                   ? 'border-[#005bd3] bg-[#f0f6ff]'
                                   : 'border-[#c9cccf] hover:bg-gray-50'
@@ -549,19 +536,19 @@ export default function EditCollection() {
                                 <img
                                   src={product.media[0].url}
                                   alt={product.title}
-                                  className="w-12 h-12 rounded object-cover"
+                                  className="w-10 h-10 sm:w-12 sm:h-12 rounded object-cover"
                                 />
                               ) : (
-                                <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded flex items-center justify-center">
                                   <svg className="w-6 h-6 text-gray-400" viewBox="0 0 16 16" fill="currentColor">
                                     <path d="M11 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2"></path>
                                     <path fillRule="evenodd" d="M9.276 1.5c-1.02 0-1.994.415-2.701 1.149l-4.254 4.417a2.75 2.75 0 0 0 .036 3.852l2.898 2.898a2.5 2.5 0 0 0 3.502.033l4.747-4.571a3.25 3.25 0 0 0 .996-2.341v-2.187a3.25 3.25 0 0 0-3.25-3.25zm-1.62 2.19a2.24 2.24 0 0 1 1.62-.69h1.974c.966 0 1.75.784 1.75 1.75v2.187c0 .475-.194.93-.536 1.26l-4.747 4.572a1 1 0 0 1-1.401-.014l-2.898-2.898a1.25 1.25 0 0 1-.016-1.75l4.253-4.418Z"></path>
                                   </svg>
                                 </div>
                               )}
-                              <div className="flex-1">
-                                <p className="text-[14px] font-medium text-[#303030]">{product.title}</p>
-                                <p className="text-[13px] text-[#616161]">
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[13px] sm:text-[14px] font-medium text-[#303030] truncate">{product.title}</p>
+                                <p className="text-[12px] sm:text-[13px] text-[#616161]">
                                   Rs {product.price?.toFixed(2)} • {product.status}
                                 </p>
                               </div>
@@ -600,7 +587,7 @@ export default function EditCollection() {
                   </div>
 
                   {/* Search Engine Listing Card */}
-                  <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h2 className="text-[16px] font-semibold text-[#303030]">Search engine listing</h2>
@@ -618,9 +605,9 @@ export default function EditCollection() {
                 </div>
 
                 {/* Right Column - Sidebar */}
-                <div className="w-80 space-y-6">
+                <div className="w-full lg:w-80 space-y-4 lg:space-y-6">
                   {/* Publishing Card */}
-                  <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h2 className="text-[16px] font-semibold text-[#303030]">Publishing</h2>
@@ -656,7 +643,7 @@ export default function EditCollection() {
                   </div>
 
                   {/* Image Card */}
-                  <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
                     <div className="space-y-4">
                       <h2 className="text-[18px] font-semibold text-[#303030]">Image</h2>
                       
@@ -699,7 +686,7 @@ export default function EditCollection() {
                   </div>
 
                   {/* Theme Template Card */}
-                  <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
                     <div className="space-y-4">
                       <h2 className="text-[16px] font-semibold text-[#303030]">Theme template</h2>
                       <select className="w-full px-3 py-2 border border-[#c9cccf] rounded-lg text-[14px] focus:outline-none focus:ring-2 focus:ring-[#005bd3]">
@@ -718,18 +705,18 @@ export default function EditCollection() {
               )}
 
               {/* Save Button */}
-              <div className="mt-6 flex justify-end gap-3">
+              <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-end gap-3">
                 <button 
                   onClick={() => router.push('/adminDashboard/Collections')}
                   disabled={saving}
-                  className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[14px] font-semibold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                  className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[13px] sm:text-[14px] font-semibold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 order-2 sm:order-1"
                 >
                   Cancel
                 </button>
                 <button 
                   onClick={handleSaveCollection}
                   disabled={!title.trim() || saving}
-                  className={`px-4 py-2 text-[14px] font-semibold rounded-lg transition-colors ${
+                  className={`px-4 py-2 text-[13px] sm:text-[14px] font-semibold rounded-lg transition-colors order-1 sm:order-2 ${
                     title.trim() && !saving
                       ? 'bg-[#303030] text-white hover:bg-[#1a1a1a]' 
                       : 'bg-[#c9cccf] text-[#616161] cursor-not-allowed'
@@ -740,10 +727,7 @@ export default function EditCollection() {
               </div>
               </>
               )}
-            </div>
-          </main>
-        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

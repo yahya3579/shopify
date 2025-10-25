@@ -1,19 +1,63 @@
 'use client';
 
-import { useState } from 'react';
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ChevronRight, ChevronDown, X } from 'lucide-react';
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const [productsExpanded, setProductsExpanded] = useState(true);
   const [activeMenu, setActiveMenu] = useState('products');
   const [activeSubItem, setActiveSubItem] = useState('collections'); // Track active sub-item
 
-  return (
-    <aside className="w-[240px] bg-[#ececec] border-r border-[#e1e1e1] flex flex-col">
-      {/* Logo Area */}
-      
+  // Close sidebar when clicking outside on mobile
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isOpen && !event.target.closest('.sidebar-container') && !event.target.closest('[data-sidebar-trigger]')) {
+        onClose?.();
+      }
+    };
 
-      {/* Sidebar Content */}
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      // Prevent body scroll when sidebar is open on mobile
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = '';
+    };
+  }, [isOpen, onClose]);
+
+  return (
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" style={{ backgroundColor: '#000000', opacity: 0.5 }} />
+      )}
+      
+      {/* Sidebar */}
+      <aside className={`
+        sidebar-container
+        fixed lg:static inset-y-0 left-0 z-50 lg:z-auto
+        w-[240px] bg-[#ececec] border-r border-[#e1e1e1] flex flex-col
+        transform transition-transform duration-300 ease-in-out lg:transform-none
+        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        {/* Mobile Close Button */}
+        <div className="lg:hidden flex items-center justify-between p-4 border-b border-[#e1e1e1]">
+          <span className="text-[16px] font-semibold text-[#303030]">Menu</span>
+          <button 
+            onClick={onClose}
+            className="p-2 hover:bg-[#e8e8e8] rounded transition-colors"
+            aria-label="Close menu"
+          >
+            <X className="w-5 h-5 text-[#5c5f62]" />
+          </button>
+        </div>
+
+        {/* Sidebar Content */}
       <div className="flex-1 overflow-y-auto">
         {/* Primary Navigation */}
         <div className="py-2">
@@ -231,5 +275,6 @@ export default function Sidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 }

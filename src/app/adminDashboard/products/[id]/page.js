@@ -459,12 +459,12 @@ export default function EditProduct() {
         <Sidebar />
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-[#f1f1f1] rounded-tl-3xl">
+        <div className="flex-1 flex flex-col overflow-hidden bg-[#f1f1f1] lg:rounded-tl-3xl">
           {/* Main Content Area */}
           <main className="flex-1 overflow-auto bg-[#f1f1f1]">
-            <div className="max-w-[1200px] mx-auto px-26 py-6">
+            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
               {/* Page Header */}
-              <div className="mb-6">
+              <div className="mb-4 sm:mb-6">
                 <div className="flex items-center gap-2">
                   {/* Products Link */}
                   <a 
@@ -489,7 +489,7 @@ export default function EditProduct() {
               </div>
 
               {/* Two Column Layout */}
-              <div className="flex gap-5">
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-5">
                 {/* Left Column - Main Content */}
                 <div className="flex-1 space-y-4">
                   {/* Title, Description, Media, Category Card */}
@@ -537,7 +537,7 @@ export default function EditProduct() {
                       
                       {/* Uploaded Images Grid */}
                       {uploadedImages.length > 0 && (
-                        <div className="grid grid-cols-4 gap-4 mb-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
                           {uploadedImages.map((image, index) => (
                             <div key={index} className="relative group">
                               <img
@@ -1008,7 +1008,7 @@ export default function EditProduct() {
                 </div>
 
                 {/* Right Column - Sidebar */}
-                <div className="w-80 space-y-4">
+                <div className="w-full lg:w-80 space-y-4">
                   {/* Status Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div className="p-4 border-b border-[#e1e1e1]">
@@ -1186,10 +1186,10 @@ export default function EditProduct() {
               )}
 
               {/* Update Button */}
-              <div className="mt-6 flex justify-end gap-3">
+              <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-end gap-3">
                 <button 
                   onClick={() => router.push('/adminDashboard')}
-                  className="px-4 py-2 bg-white border border-[#c9cccf] text-[#303030] text-[13px] font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 bg-white border border-[#c9cccf] text-[#303030] text-[13px] font-semibold rounded-lg hover:bg-gray-50 transition-colors order-2 sm:order-1"
                   disabled={saving}
                 >
                   Cancel
@@ -1197,7 +1197,7 @@ export default function EditProduct() {
                 <button 
                   onClick={handleUpdateProduct}
                   disabled={saving || uploadingImages}
-                  className="px-4 py-2 bg-[#303030] text-white text-[13px] font-semibold rounded-lg hover:bg-[#1a1a1a] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="px-4 py-2 bg-[#303030] text-white text-[13px] font-semibold rounded-lg hover:bg-[#1a1a1a] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed order-1 sm:order-2"
                 >
                   {saving ? 'Updating...' : 'Update Product'}
                 </button>

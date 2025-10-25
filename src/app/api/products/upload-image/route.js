@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
+import { uploadToCloudinary } from '../../../../lib/cloudinary';
 
 export async function POST(request) {
   try {
@@ -15,37 +13,42 @@ export async function POST(request) {
       );
     }
 
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      return NextResponse.json(
+        { error: 'Invalid file type. Only images are allowed.' },
+        { status: 400 }
+      );
+    }
+
+    // Validate file size (10MB limit)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      return NextResponse.json(
+        { error: 'File size too large. Maximum 10MB allowed.' },
+        { status: 400 }
+      );
+    }
+
     // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Generate unique filename
+    // Generate unique filename for Cloudinary
     const timestamp = Date.now();
-    const originalName = file.name.replace(/\s+/g, '-');
-    const filename = `${timestamp}-${originalName}`;
+    const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const publicId = `product_${timestamp}_${originalName.split('.')[0]}`;
 
-    // Define upload directory path
-    const uploadDir = join(process.cwd(), 'public', 'productimages');
-
-    // Create directory if it doesn't exist
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
-
-    // Define file path
-    const filepath = join(uploadDir, filename);
-
-    // Write file to the filesystem
-    await writeFile(filepath, buffer);
-
-    // Return the URL that can be used to access the image
-    const imageUrl = `/productimages/${filename}`;
+    // Upload to Cloudinary
+    const result = await uploadToCloudinary(buffer, 'products', publicId);
 
     return NextResponse.json(
       {
         success: true,
-        imageUrl,
-        filename,
+        imageUrl: result.secure_url,
+        publicId: result.public_id,
+        filename: result.public_id, // For backward compatibility
         message: 'Image uploaded successfully',
       },
       { status: 200 }
@@ -59,37 +62,41 @@ export async function POST(request) {
   }
 }
 
-// Optional: DELETE endpoint to remove images
+// DELETE endpoint to remove images from Cloudinary
 export async function DELETE(request) {
   try {
     const { searchParams } = new URL(request.url);
     const filename = searchParams.get('filename');
+    const publicId = searchParams.get('publicId');
 
-    if (!filename) {
+    // Support both filename (for backward compatibility) and publicId
+    const imageId = publicId || filename;
+
+    if (!imageId) {
       return NextResponse.json(
-        { error: 'Filename is required' },
+        { error: 'Filename or publicId is required' },
         { status: 400 }
       );
     }
 
-    const filepath = join(process.cwd(), 'public', 'productimages', filename);
+    // Import deleteFromCloudinary function
+    const { deleteFromCloudinary, extractPublicId } = await import('../../../../lib/cloudinary');
 
-    // Check if file exists
-    if (!existsSync(filepath)) {
-      return NextResponse.json(
-        { error: 'File not found' },
-        { status: 404 }
-      );
+    let cloudinaryPublicId = imageId;
+
+    // If it looks like a URL, extract the public ID
+    if (imageId.includes('cloudinary.com')) {
+      cloudinaryPublicId = extractPublicId(imageId);
     }
 
-    // Delete file
-    const { unlink } = await import('fs/promises');
-    await unlink(filepath);
+    // Delete from Cloudinary
+    const result = await deleteFromCloudinary(cloudinaryPublicId);
 
     return NextResponse.json(
       {
         success: true,
         message: 'Image deleted successfully',
+        result,
       },
       { status: 200 }
     );

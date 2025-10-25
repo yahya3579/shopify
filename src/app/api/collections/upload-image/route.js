@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { writeFile, unlink } from 'fs/promises';
-import path from 'path';
+import { uploadToCloudinary } from '../../../../lib/cloudinary';
 
 export async function POST(request) {
   try {
@@ -14,28 +13,40 @@ export async function POST(request) {
       );
     }
 
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      return NextResponse.json(
+        { error: 'Invalid file type. Only images are allowed.' },
+        { status: 400 }
+      );
+    }
+
+    // Validate file size (10MB limit)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      return NextResponse.json(
+        { error: 'File size too large. Maximum 10MB allowed.' },
+        { status: 400 }
+      );
+    }
+
     // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Generate unique filename
+    // Generate unique filename for Cloudinary
     const timestamp = Date.now();
-    const originalName = file.name.replace(/\s+/g, '-');
-    const filename = `${timestamp}-${originalName}`;
+    const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const publicId = `collection_${timestamp}_${originalName.split('.')[0]}`;
 
-    // Define path to public/collectionimages folder
-    const publicPath = path.join(process.cwd(), 'public', 'collectionimages');
-    const filePath = path.join(publicPath, filename);
-
-    // Write file to public/collectionimages
-    await writeFile(filePath, buffer);
-
-    // Return the public URL
-    const imageUrl = `/collectionimages/${filename}`;
+    // Upload to Cloudinary
+    const result = await uploadToCloudinary(buffer, 'collections', publicId);
 
     return NextResponse.json({
       success: true,
-      imageUrl,
+      imageUrl: result.secure_url,
+      publicId: result.public_id,
       message: 'Image uploaded successfully',
     });
   } catch (error) {
@@ -51,23 +62,35 @@ export async function DELETE(request) {
   try {
     const { searchParams } = new URL(request.url);
     const filename = searchParams.get('filename');
+    const publicId = searchParams.get('publicId');
 
-    if (!filename) {
+    // Support both filename (for backward compatibility) and publicId
+    const imageId = publicId || filename;
+
+    if (!imageId) {
       return NextResponse.json(
-        { error: 'Filename is required' },
+        { error: 'Filename or publicId is required' },
         { status: 400 }
       );
     }
 
-    // Define path to the file
-    const filePath = path.join(process.cwd(), 'public', 'collectionimages', filename);
+    // Import deleteFromCloudinary function
+    const { deleteFromCloudinary, extractPublicId } = await import('../../../../lib/cloudinary');
 
-    // Delete the file
-    await unlink(filePath);
+    let cloudinaryPublicId = imageId;
+
+    // If it looks like a URL, extract the public ID
+    if (imageId.includes('cloudinary.com')) {
+      cloudinaryPublicId = extractPublicId(imageId);
+    }
+
+    // Delete from Cloudinary
+    const result = await deleteFromCloudinary(cloudinaryPublicId);
 
     return NextResponse.json({
       success: true,
       message: 'Image deleted successfully',
+      result,
     });
   } catch (error) {
     console.error('Error deleting image:', error);

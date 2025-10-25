@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Header from '@/components/Header';
-import Sidebar from '@/components/Sidebar';
+import AdminLayout from '@/components/AdminLayout';
 import { ChevronDown, Search, Edit, Upload, Image, PlayCircle, Link, MoreHorizontal, Code, Trash2, Calendar, Sliders, Info } from 'lucide-react';
 
 export default function CreateGiftCardProductPage() {
@@ -154,23 +153,11 @@ export default function CreateGiftCardProductPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#f1f1f1]">
-      {/* Header */}
-      <Header />
-
-      {/* Main Layout with Sidebar and Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-[#f1f1f1] rounded-tl-3xl">
-          {/* Main Content Area */}
-          <main className="flex-1 overflow-auto bg-[#f1f1f1]">
-            <div className="max-w-[1400px] mx-auto px-60 py-6">
-              {/* Page Header */}
-              <div className="mb-6">
-                <div className="flex items-center gap-2">
+    <AdminLayout>
+      <div className="max-w-[1400px] mx-auto px-4 lg:px-60 py-4 lg:py-6">
+        {/* Page Header */}
+        <div className="mb-4 lg:mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                   <a 
                     href="/adminDashboard/GiftCards"
                     className="flex items-center gap-2 text-[#3a3a3a] hover:underline"
@@ -178,20 +165,19 @@ export default function CreateGiftCardProductPage() {
                     <svg className="w-5 h-5" viewBox="0 0 16 16" fill="currentColor">
                       <path fillRule="evenodd" d="M13.5 3.5h-5.5v.75a.75.75 0 0 1-1.5 0v-.75h-4a.5.5 0 0 0-.5.5v3.043a.75.75 0 0 1 0 1.414v3.543a.5.5 0 0 0 .5.5h4v-1a.75.75 0 0 1 1.5 0v1h5.5a.5.5 0 0 0 .5-.5v-3.5h-1.25a.75.75 0 0 1 0-1.5h1.25v-3a.5.5 0 0 0-.5-.5m2 4.25v-3.75a2 2 0 0 0-2-2h-11a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2zm-8.703-1.758a2.117 2.117 0 0 0-4.047.88c0 1.171.95 2.128 2.125 2.128h.858c-.595.51-1.256.924-1.84 1.008a.749.749 0 1 0 .213 1.484c1.11-.158 2.128-.919 2.803-1.53a11 11 0 0 0 .341-.322q.16.158.34.322c.676.611 1.693 1.372 2.804 1.53a.749.749 0 1 0 .212-1.484c-.583-.084-1.244-.498-1.839-1.008h.858a2.13 2.13 0 0 0 2.125-2.128 2.118 2.118 0 0 0-4.047-.88l-.453.996zm-.962 1.508h-.96a.627.627 0 0 1-.625-.628.619.619 0 0 1 1.182-.259zm3.79 0h-.96l.403-.887a.618.618 0 0 1 1.182.259.63.63 0 0 1-.625.628"></path>
                     </svg>
-                    
                   </a>
-                  <ChevronDown className="w-4 h-4 text-[#8A8A8A] -rotate-90" />
-                  <h1 className="text-[24px] font-semibold text-[#303030]">Create gift card product</h1>
+                  <ChevronDown className="w-4 h-4 text-[#8A8A8A] -rotate-90 hidden sm:block" />
+                  <h1 className="text-[20px] lg:text-[24px] font-semibold text-[#303030]">Create gift card product</h1>
                 </div>
               </div>
 
-              {/* Main Content Grid */}
-              <div className="grid grid-cols-3 gap-6">
-                {/* Left Column - 2/3 width */}
-                <div className="col-span-2 space-y-6">
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+          {/* Left Column - 2/3 width */}
+          <div className="lg:col-span-2 space-y-4 lg:space-y-6">
                   {/* Title Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-6">
+                    <div className="p-4 lg:p-6">
                       <div className="space-y-4">
                         <div>
                           <label className="block text-[14px] font-medium text-[#303030] mb-2">Title</label>
@@ -209,14 +195,14 @@ export default function CreateGiftCardProductPage() {
 
                   {/* Description Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-6">
+                    <div className="p-4 lg:p-6">
                       <div className="space-y-4">
                         <div>
                           <label className="block text-[14px] font-medium text-[#303030] mb-2">Description</label>
                           
                           {/* Rich Text Editor Toolbar */}
                           <div className="border border-[#c9cccf] rounded-t-lg bg-gray-50 p-2">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 overflow-x-auto">
                               {/* Magic Wand */}
                               <button className="p-1 hover:bg-gray-200 rounded transition-colors">
                                 <svg className="w-4 h-4 text-[#6d7175]" fill="currentColor" viewBox="0 0 16 16">
@@ -312,7 +298,7 @@ export default function CreateGiftCardProductPage() {
 
                   {/* Media Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-6">
+                    <div className="p-4 lg:p-6">
                       <div className="space-y-4">
                         <div>
                           <label className="block text-[14px] font-medium text-[#303030] mb-2">Media</label>
@@ -380,10 +366,9 @@ export default function CreateGiftCardProductPage() {
                       </div>
                     </div>
                   </div>
-
                   {/* Category Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-6">
+                    <div className="p-4 lg:p-6">
                       <div className="space-y-4">
                         <div>
                           <label className="block text-[14px] font-medium text-[#303030] mb-2">Category</label>
@@ -403,12 +388,12 @@ export default function CreateGiftCardProductPage() {
 
                   {/* Denominations Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-6">
+                    <div className="p-4 lg:p-6">
                       <div className="space-y-4">
                         <h2 className="text-[14px] font-semibold text-[#303030]">Denominations</h2>
                         <div className="space-y-3">
                           {denominations.map((denomination, index) => (
-                            <div key={index} className="flex items-center gap-3">
+                            <div key={index} className="flex flex-col sm:flex-row sm:items-center gap-3">
                               <div className="flex-1">
                                 <label className="block text-[14px] font-medium text-[#303030] mb-2">Denomination amount</label>
                                 <div className="relative">
@@ -443,7 +428,7 @@ export default function CreateGiftCardProductPage() {
 
                   {/* Search Engine Listing Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-6">
+                    <div className="p-4 lg:p-6">
                       <div className="flex items-center justify-between mb-4">
                         <h2 className="text-[14px] font-semibold text-[#303030]">Search engine listing</h2>
                         <button className="p-1 hover:bg-gray-100 rounded transition-colors">
@@ -457,11 +442,11 @@ export default function CreateGiftCardProductPage() {
                   </div>
                 </div>
 
-                {/* Right Column - 1/3 width */}
-                <div className="space-y-6">
+          {/* Right Column - 1/3 width */}
+          <div className="lg:col-span-1 space-y-4 lg:space-y-6">
                   {/* Status Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-6">
+                    <div className="p-4 lg:p-6">
                       <div className="space-y-4">
                         <h2 className="text-[14px] font-semibold text-[#303030]">Status</h2>
                         <button className="w-full flex items-center justify-between px-3 py-2 border border-[#c9cccf] rounded-lg text-[14px] text-[#303030] hover:bg-gray-50 transition-colors">
@@ -474,7 +459,7 @@ export default function CreateGiftCardProductPage() {
 
                   {/* Publishing Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-6">
+                    <div className="p-4 lg:p-6">
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <h2 className="text-[14px] font-semibold text-[#303030]">Publishing</h2>
@@ -503,7 +488,7 @@ export default function CreateGiftCardProductPage() {
 
                   {/* Product Organization Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-6">
+                    <div className="p-4 lg:p-6">
                       <div className="space-y-4">
                         <div className="flex items-center gap-2">
                           <h2 className="text-[14px] font-semibold text-[#303030]">Product organization</h2>
@@ -558,7 +543,7 @@ export default function CreateGiftCardProductPage() {
 
                   {/* Theme Template Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-6">
+                    <div className="p-4 lg:p-6">
                       <div className="space-y-4">
                         <div>
                           <label className="block text-[14px] font-medium text-[#303030] mb-2">Theme template</label>
@@ -576,7 +561,7 @@ export default function CreateGiftCardProductPage() {
 
                   {/* Gift Card Template Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-6">
+                    <div className="p-4 lg:p-6">
                       <div className="space-y-4">
                         <div>
                           <label className="block text-[14px] font-medium text-[#303030] mb-2">Gift card template</label>
@@ -597,27 +582,24 @@ export default function CreateGiftCardProductPage() {
                 </div>
               </div>
 
-              {/* Error Message */}
-              {error && (
-                <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-red-600 text-sm">{error}</p>
-                </div>
-              )}
+        {/* Error Message */}
+        {error && (
+          <div className="mt-4 lg:mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
+        )}
 
-              {/* Save Button */}
-              <div className="mt-6 flex justify-end">
-                <button 
-                  onClick={handleSaveGiftCardProduct}
-                  disabled={saving}
-                  className="px-4 py-2 bg-[#2e2e2e] text-white text-[12px] font-semibold rounded-lg hover:bg-[#004494] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {saving ? 'Saving...' : 'Save gift card product'}
-                </button>
-              </div>
-            </div>
-          </main>
+        {/* Save Button */}
+        <div className="mt-4 lg:mt-6 flex justify-end">
+          <button 
+            onClick={handleSaveGiftCardProduct}
+            disabled={saving}
+            className="px-4 py-2 bg-[#2e2e2e] text-white text-[12px] font-semibold rounded-lg hover:bg-[#004494] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {saving ? 'Saving...' : 'Save gift card product'}
+          </button>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

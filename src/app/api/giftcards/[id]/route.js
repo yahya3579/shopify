@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import connectDB from '../../../../lib/mongodb';
 import GiftCard from '../../../../models/GiftCard';
+import User from '../../../../models/User';
 import { verifyAuth } from '../../../../lib/auth';
 
 // GET single gift card by ID
@@ -165,9 +166,66 @@ export async function PUT(request, { params }) {
     if (body.notes !== undefined) {
       updateData.notes = body.notes;
     }
+
+    // Status (active/deactivated)
+    if (body.status !== undefined) {
+      // Validate status value
+      if (!['active', 'deactivated'].includes(body.status)) {
+        return NextResponse.json(
+          { error: 'Invalid status. Must be "active" or "deactivated"' },
+          { status: 400 }
+        );
+      }
+      updateData.status = body.status;
+    }
     
     // Prepare update instructions
     let updateOps = {};
+    
+    // Handle comment deletion
+    if (body.deleteCommentIndex !== undefined && typeof body.deleteCommentIndex === 'number') {
+      const commentIndex = body.deleteCommentIndex;
+      
+      // Validate comment index
+      if (commentIndex < 0 || commentIndex >= existingGiftCard.comments.length) {
+        return NextResponse.json(
+          { error: 'Invalid comment index' },
+          { status: 400 }
+        );
+      }
+      
+      // Remove comment at specified index
+      updateOps.$unset = {};
+      updateOps.$unset[`comments.${commentIndex}`] = 1;
+      
+      // After unsetting, we need to pull null values to compact the array
+      const updatedGiftCard = await GiftCard.findByIdAndUpdate(
+        id,
+        updateOps,
+        { new: true }
+      );
+      
+      // Pull null values to compact array
+      const finalGiftCard = await GiftCard.findByIdAndUpdate(
+        id,
+        { $pull: { comments: null } },
+        { new: true, runValidators: true }
+      )
+        .populate('createdBy', 'firstName lastName email')
+        .populate('updatedBy', 'firstName lastName email')
+        .populate({ path: 'comments.author', select: 'firstName lastName', strictPopulate: false });
+      
+      return NextResponse.json(
+        {
+          success: true,
+          message: 'Comment deleted successfully',
+          data: finalGiftCard,
+        },
+        { status: 200 }
+      );
+    }
+    
+    // Handle adding new comment
     if (
       body.comment !== undefined &&
       typeof body.comment === 'string' &&
@@ -180,6 +238,7 @@ export async function PUT(request, { params }) {
       };
       updateOps.$push = { comments: newComment };
     }
+    
     if (Object.keys(updateData).length > 0) {
       updateOps.$set = updateData;
     }

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir, unlink } from 'fs/promises';
-import path from 'path';
+import { uploadToCloudinary } from '../../../../../lib/cloudinary';
 
 export async function POST(request) {
   try {
@@ -23,11 +22,11 @@ export async function POST(request) {
       );
     }
 
-    // Validate file size (5MB limit)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    // Validate file size (10MB limit)
+    const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: 'File size too large. Maximum 5MB allowed.' },
+        { error: 'File size too large. Maximum 10MB allowed.' },
         { status: 400 }
       );
     }
@@ -35,31 +34,21 @@ export async function POST(request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Create unique filename
+    // Generate unique filename for Cloudinary
     const timestamp = Date.now();
     const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const filename = `${timestamp}-${originalName}`;
+    const publicId = `giftcard_${timestamp}_${originalName.split('.')[0]}`;
 
-    // Ensure the directory exists
-    const uploadDir = path.join(process.cwd(), 'public', 'giftcardproductimages');
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (error) {
-      // Directory might already exist, ignore error
-    }
-
-    // Write the file
-    const filepath = path.join(uploadDir, filename);
-    await writeFile(filepath, buffer);
-
-    // Return the public URL
-    const imageUrl = `/giftcardproductimages/${filename}`;
+    // Upload to Cloudinary
+    const result = await uploadToCloudinary(buffer, 'giftcards', publicId);
 
     return NextResponse.json(
       {
         success: true,
-        url: imageUrl,
-        filename: filename,
+        url: result.secure_url,
+        imageUrl: result.secure_url, // For backward compatibility
+        publicId: result.public_id,
+        filename: result.public_id, // For backward compatibility
       },
       { status: 200 }
     );
@@ -76,28 +65,36 @@ export async function DELETE(request) {
   try {
     const { searchParams } = new URL(request.url);
     const filename = searchParams.get('filename');
+    const publicId = searchParams.get('publicId');
 
-    if (!filename) {
+    // Support both filename (for backward compatibility) and publicId
+    const imageId = publicId || filename;
+
+    if (!imageId) {
       return NextResponse.json(
-        { error: 'Filename is required' },
+        { error: 'Filename or publicId is required' },
         { status: 400 }
       );
     }
 
-    // Delete the file
-    const filepath = path.join(process.cwd(), 'public', 'giftcardproductimages', filename);
-    
-    try {
-      await unlink(filepath);
-    } catch (error) {
-      // File might not exist, ignore error
-      console.log('File not found or already deleted:', filename);
+    // Import deleteFromCloudinary function
+    const { deleteFromCloudinary, extractPublicId } = await import('../../../../../lib/cloudinary');
+
+    let cloudinaryPublicId = imageId;
+
+    // If it looks like a URL, extract the public ID
+    if (imageId.includes('cloudinary.com')) {
+      cloudinaryPublicId = extractPublicId(imageId);
     }
+
+    // Delete from Cloudinary
+    const result = await deleteFromCloudinary(cloudinaryPublicId);
 
     return NextResponse.json(
       {
         success: true,
         message: 'Image deleted successfully',
+        result,
       },
       { status: 200 }
     );

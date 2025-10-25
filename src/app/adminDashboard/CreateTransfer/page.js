@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Header from '@/components/Header';
-import Sidebar from '@/components/Sidebar';
+import AdminLayout from '@/components/AdminLayout';
 import { ChevronDown, Search, Calendar, Edit, Barcode, ChevronLeft, ChevronRight, X, PlusCircle, XCircle, Info } from 'lucide-react';
 import { useRef, useEffect } from 'react';
 
@@ -111,23 +110,11 @@ export default function CreateTransferPage() {
   }, [showAddTagsModal]);
 
   return (
-    <div className="flex flex-col h-screen bg-[#f1f1f1]">
-      {/* Header */}
-      <Header />
-
-      {/* Main Layout with Sidebar and Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-[#f1f1f1] rounded-tl-3xl">
-          {/* Main Content Area */}
-          <main className="flex-1 overflow-auto bg-[#f1f1f1]">
-            <div className="max-w-[1200px] mx-auto px-12 py-6 pb-12">
-              {/* Page Header */}
-              <div className="mb-6">
-                <div className="flex items-center gap-2">
+    <AdminLayout>
+      <div className="max-w-[1200px] mx-auto px-4 lg:px-12 py-4 lg:py-6 pb-8 lg:pb-12">
+        {/* Page Header */}
+        <div className="mb-4 lg:mb-6">
+          <div className="flex items-center gap-2">
                   <a 
                     href="/adminDashboard/Transfers"
                     className="flex items-center gap-2 text-[#0a0a0a] hover:underline"
@@ -138,22 +125,22 @@ export default function CreateTransferPage() {
                     </svg>
                     {/* <span className="text-[14px] font-medium">Transfers</span> */}
                   </a>
-                  <ChevronDown className="w-4 h-4 text-[#8A8A8A] rotate-[-90deg]" />
-                  <h1 className="text-[20px] font-semibold text-[#303030]">Create transfer</h1>
-                </div>
-              </div>
+                  <ChevronDown className="w-4 h-4 text-[#8A8A8A] -rotate-90" />
+            <h1 className="text-[18px] sm:text-[20px] font-semibold text-[#303030]">Create transfer</h1>
+          </div>
+        </div>
 
-              {/* Main Content Grid */}
-              <div className="grid grid-cols-3 gap-6">
-                {/* Left Column - 2/3 width */}
-                <div className="col-span-2 space-y-6">
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+          {/* Left Column - 2/3 width */}
+          <div className="lg:col-span-2 space-y-4 lg:space-y-6">
                   {/* Origin and Destination Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="px-6 pt-6 pb-6">
+                    <div className="px-4 lg:px-6 pt-4 lg:pt-6 pb-4 lg:pb-6">
                       {/* <h2 className="text-[16px] font-semibold text-[#303030] mb-4">Origin and destination</h2> */}
-                      <div className="flex">
+                      <div className="flex flex-col sm:flex-row">
                         {/* Origin Section */}
-                        <div className="flex-1 pr-4">
+                        <div className="flex-1 pr-0 sm:pr-4">
                           <label className="block text-[14px] font-medium text-[#303030] mb-2">Origin</label>
                           <button className="w-full flex items-center justify-between px-3 py-2 border border-[#c9cccf] rounded-lg text-[14px] text-[#6d7175] hover:bg-gray-50 transition-colors">
                             <span>Select origin</span>
@@ -162,10 +149,10 @@ export default function CreateTransferPage() {
                         </div>
                         
                         {/* Vertical Divider */}
-                        <div className="w-px bg-[#e1e1e1] mx-4"></div>
+                        <div className="hidden sm:block w-px bg-[#e1e1e1] mx-4"></div>
                         
                         {/* Destination Section */}
-                        <div className="flex-1 pl-4">
+                        <div className="flex-1 pl-0 sm:pl-4">
                           <label className="block text-[14px] font-medium text-[#303030] mb-2">Destination</label>
                           <button className="w-full flex items-center justify-between px-3 py-2 border border-[#c9cccf] rounded-lg text-[14px] text-[#6d7175] hover:bg-gray-50 transition-colors">
                             <span>Select destination</span>
@@ -178,9 +165,9 @@ export default function CreateTransferPage() {
 
                   {/* Add Products Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-6">
+                    <div className="p-4 lg:p-6">
                       <h2 className="text-[14px] font-semibold text-[#303030] mb-4">Add products</h2>
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         {/* Search Input */}
                         <div className="flex-1 relative">
                           <Search className="w-4 h-4 text-[#6d7175] absolute left-3 top-1/2 -translate-y-1/2" />
@@ -194,25 +181,27 @@ export default function CreateTransferPage() {
                         </div>
                         
                         {/* Action Buttons */}
-                        <button className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[14px] font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                          Browse
-                        </button>
-                        <button className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[14px] font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                          Import
-                        </button>
-                        <button className="p-2 border border-[#c9cccf] text-[#303030] rounded-lg hover:bg-gray-50 transition-colors">
-                          <Barcode className="w-4 h-4" />
-                        </button>
+                        <div className="flex flex-wrap gap-2">
+                          <button className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[14px] font-medium rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap">
+                            Browse
+                          </button>
+                          <button className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[14px] font-medium rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap">
+                            Import
+                          </button>
+                          <button className="p-2 border border-[#c9cccf] text-[#303030] rounded-lg hover:bg-gray-50 transition-colors">
+                            <Barcode className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Right Column - 1/3 width */}
-                <div className="space-y-6 overflow-visible">
+          {/* Right Column - 1/3 width */}
+          <div className="space-y-4 lg:space-y-6 overflow-visible">
                   {/* Notes Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-6">
+                    <div className="p-4 lg:p-6">
                       <div className="flex items-center justify-between mb-4">
                         <h2 className="text-[14px] font-semibold text-[#303030]">Notes</h2>
                         <button 
@@ -228,7 +217,7 @@ export default function CreateTransferPage() {
 
                   {/* Transfer Details Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-visible">
-                    <div className="p-6 pb-8">
+                    <div className="p-4 lg:p-6 pb-6 lg:pb-8">
                       <h2 className="text-[14px] font-semibold text-[#303030] mb-4">Transfer details</h2>
                       <div className="space-y-4">
                         {/* Date Created */}
@@ -251,7 +240,7 @@ export default function CreateTransferPage() {
 
                           {/* Calendar Dropdown */}
                           {showCalendar && (
-                            <div className="absolute top-full left-0 mt-1 bg-white border border-[#c9cccf] rounded-lg shadow-lg z-[9999] w-64 overflow-hidden">
+                            <div className="absolute top-full left-0 mt-1 bg-white border border-[#c9cccf] rounded-lg shadow-lg z-9999 w-64 sm:w-64 overflow-hidden">
                               {/* Calendar Header */}
                               <div className="flex items-center justify-between p-3 border-b border-[#e1e1e1]">
                                 <button
@@ -320,7 +309,7 @@ export default function CreateTransferPage() {
 
                   {/* Tags Card */}
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-6">
+                    <div className="p-4 lg:p-6">
                       <div className="flex items-center justify-between mb-4">
                         <h2 className="text-[14px] font-semibold text-[#303030]">Tags</h2>
                         <button 
@@ -349,18 +338,15 @@ export default function CreateTransferPage() {
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </main>
         </div>
       </div>
 
       {/* Add Note Modal */}
       {showAddNoteModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-[9999]" style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
+        <div className="fixed inset-0 flex items-center justify-center z-9999 bg-black bg-opacity-30">
           <div 
             ref={addNoteModalRef}
-            className="bg-white rounded-lg shadow-lg max-w-[500px] w-full mx-4 max-h-[80vh] overflow-hidden"
+            className="bg-white rounded-lg shadow-lg max-w-[90vw] sm:max-w-[500px] w-full mx-4 max-h-[80vh] overflow-hidden"
           >
             {/* Modal Header */}
             <div className="bg-[#f6f6f7] px-6 py-4 border-b border-[#e1e1e1]">
@@ -376,7 +362,7 @@ export default function CreateTransferPage() {
             </div>
 
             {/* Modal Body */}
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <div className="space-y-4">
                 <div>
                   <label className="block text-[14px] font-medium text-[#303030] mb-2">Note</label>
@@ -396,11 +382,11 @@ export default function CreateTransferPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="border-t border-[#e1e1e1] p-6">
+            <div className="border-t border-[#e1e1e1] p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">   
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <button
                     onClick={() => setShowAddNoteModal(false)}
                     className="px-4 py-2 border border-[#c9cccf] text-[#303030] text-[12px] font-medium rounded-lg hover:bg-gray-50 transition-colors"
@@ -425,10 +411,10 @@ export default function CreateTransferPage() {
 
       {/* Add Tags Modal */}
       {showAddTagsModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-[9999]" style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
+        <div className="fixed inset-0 flex items-center justify-center z-9999 bg-black bg-opacity-30">
           <div 
             ref={addTagsModalRef}
-            className="bg-white rounded-lg shadow-lg max-w-[500px] w-full mx-4 max-h-[80vh] overflow-hidden"
+            className="bg-white rounded-lg shadow-lg max-w-[90vw] sm:max-w-[500px] w-full mx-4 max-h-[80vh] overflow-hidden"
           >
             {/* Modal Header */}
             <div className="bg-[#f6f6f7] px-6 py-4 border-b border-[#e1e1e1]">
@@ -444,7 +430,7 @@ export default function CreateTransferPage() {
             </div>
 
             {/* Modal Body */}
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <div className="space-y-4">
                 {/* Search Input */}
                 <div className="relative">
@@ -525,13 +511,13 @@ export default function CreateTransferPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="border-t border-[#e1e1e1] p-6">
+            <div className="border-t border-[#e1e1e1] p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Info className="w-4 h-4 text-[#6d7175]" />
                   <span className="text-[12px] text-[#6d7175]">Unsaved changes</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <button
                     onClick={() => {
                       setShowAddTagsModal(false);
@@ -557,6 +543,6 @@ export default function CreateTransferPage() {
           </div>
         </div>
       )}
-    </div>
+    </AdminLayout>
   );
 }

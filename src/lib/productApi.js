@@ -30,12 +30,20 @@ export const uploadProductImage = async (file) => {
 
 /**
  * Delete product image
- * @param {string} filename - The filename to delete
+ * @param {string} imageIdentifier - The filename or Cloudinary URL to delete
  * @returns {Promise<Object>} - Delete response
  */
-export const deleteProductImage = async (filename) => {
+export const deleteProductImage = async (imageIdentifier) => {
   try {
-    const response = await fetch(`/api/products/upload-image?filename=${filename}`, {
+    // Determine if it's a Cloudinary URL or just a filename/publicId
+    let queryParam;
+    if (imageIdentifier.includes('cloudinary.com')) {
+      queryParam = `publicId=${encodeURIComponent(imageIdentifier)}`;
+    } else {
+      queryParam = `filename=${encodeURIComponent(imageIdentifier)}`;
+    }
+
+    const response = await fetch(`/api/products/upload-image?${queryParam}`, {
       method: 'DELETE',
     });
 
